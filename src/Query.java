@@ -69,6 +69,13 @@ public class Query {
         return valid;
     }
     
+    /**
+     * Adds a user to the database.
+     * 
+     * @param user user to add
+     * @return true if successful otherwise false
+     * @throws SQLException
+     */
     public static boolean addUser(User user) throws SQLException {
         if (conn == null) {
             createConnection();
