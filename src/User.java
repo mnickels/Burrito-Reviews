@@ -9,6 +9,7 @@ public class User {
     private int userId;
     private String name;
     private UserType type;
+    private String password;
 
     public User(final int userId, final String name, final UserType type) {
         setUserId(userId);
@@ -52,5 +53,16 @@ public class User {
 
     public int getUserId() {
         return userId;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        if (password == null || password.length() == 0) {
+            throw new IllegalArgumentException("Please enter a valid password");
+        }
+        this.password = password;
     }
 }
