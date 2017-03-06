@@ -85,7 +85,6 @@ public class Query {
                      + "VALUES (?, ?, ?);";
         PreparedStatement pstmt = null;
         boolean successful = true;
-        System.err.println(user);
         try {
             pstmt = conn.prepareStatement(query);
             pstmt.setString(1, user.getName());
