@@ -69,6 +69,30 @@ public class Query {
         return valid;
     }
     
+    public static boolean addUser(User user) throws SQLException {
+        if (conn == null) {
+            createConnection();
+        }
+        String query = "INSERT INTO "+db+".`User` "
+                     + "(`name`, `password`, userType) "
+                     + "VALUES (?, ?, ?);";
+        PreparedStatement pstmt = null;
+        boolean successful = true;
+        System.err.println(user);
+        try {
+            pstmt = conn.prepareStatement(query);
+            pstmt.setString(1, user.getName());
+            pstmt.setString(2, user.getPassword());
+            pstmt.setString(3, user.getType().toString());
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e);
+            e.printStackTrace();
+            successful = false;
+        }
+        return successful;
+    }
+    
     /**
      * Gets a user by their id.
      * 
