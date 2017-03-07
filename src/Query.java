@@ -251,6 +251,37 @@ public class Query {
     }
     
     /**
+     * Add a game to the database.
+     * 
+     * @param game game to add
+     * @return true on successful add otherwise false
+     * @throws SQLException
+     */
+    public static boolean addGame(Game game) throws SQLException {
+        if (conn == null) {
+            createConnection();
+        }
+        String query = "INSERT INTO "+db+".Game "
+                     + "(title, developer, `year`, esrb) "
+                     + "VALUES (?, ?, ?, ?);";
+        PreparedStatement pstmt = null;
+        boolean successful = true;
+        try {
+            pstmt = conn.prepareStatement(query);
+            pstmt.setString(1, game.getTitle());
+            pstmt.setString(2, game.getDeveloper());
+            pstmt.setInt(3, game.getYear());
+            pstmt.setString(4, game.getEsrb());
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e);
+            e.printStackTrace();
+            successful = false;
+        }
+        return successful;
+    }
+    
+    /**
      * Adds a new rating to a game.
      * If user has already rated the game their rating is updated.
      * 
