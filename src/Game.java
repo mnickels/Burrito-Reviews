@@ -32,6 +32,24 @@ public class Game {
         setEsrb(esrb);
     }
     
+    /**
+     * Create new game.
+     * 
+     * @param title game title
+     * @param developer game developer
+     * @param year year released
+     * @param esrb esrb age rating
+     * @throws IllegalArgumentException if title, developer or esrb are null or empty,
+     * id < 1, year < 1958. 
+     */
+    public Game(final String title, final String developer, final int year,
+            final String esrb) {
+        setTitle(title);
+        setDeveloper(developer);
+        setYear(year);
+        setEsrb(esrb);
+    }
+    
     @Override
     public String toString() {
         return "Game [title=" + title + ", developer=" 
