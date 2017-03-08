@@ -148,8 +148,8 @@ public class Query {
         Statement stmt = null;
         String query = "SELECT userId, userType "
                      + "FROM "+db+".User "
-                     + "WHERE `name` = "+name+" "
-                     + "AND `password` = "+password+";";
+                     + "WHERE `name` = \""+name+"\" "
+                     + "AND `password` = \""+password+"\";";
         User user = null;
         try {
             stmt = conn.createStatement();
