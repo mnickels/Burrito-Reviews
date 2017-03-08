@@ -133,6 +133,42 @@ public class Query {
     }
     
     /**
+     * Gets a user based on correct name and password.
+     * 
+     * @param name user name
+     * @param password user password
+     * @return the user
+     * @throws SQLException
+     */
+    public static User getUserByNameAndPassword(String name, String password) 
+            throws SQLException {
+        if (conn == null) {
+            createConnection();
+        }
+        Statement stmt = null;
+        String query = "SELECT userId, userType "
+                     + "FROM "+db+".User "
+                     + "WHERE `name` = "+name+" "
+                     + "AND `password` = "+password+";";
+        User user = null;
+        try {
+            stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            rs.next();
+            int id = rs.getInt("userId");
+            UserType type = UserType.valueOf(rs.getString("userType"));
+            user = new User(id, name, type);
+        } catch (SQLException e) {
+            System.out.println(e);
+        } finally {
+            if (stmt != null) {
+                stmt.close();
+            }
+        }
+        return user;
+    }
+    
+    /**
      * Gets all users from the user table.
      * 
      * @return list of users
