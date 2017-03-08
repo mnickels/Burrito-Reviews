@@ -17,6 +17,21 @@ public class User {
         setType(type);
     }
     
+    /**
+     * Create a new user
+     * 
+     * @param name user name
+     * @param type user type
+     * @param password users password
+     * @throws IllegalArgumentException if name or password are empty or null, or if
+     * invalid UserType is entered.
+     */
+    public User(final String name, final UserType type, final String password) {
+        setName(name);
+        setType(type);
+        setPassword(password);
+    }
+    
     @Override
     public String toString() {
         return "User [name=" + name + ", type=" + type + "]";
