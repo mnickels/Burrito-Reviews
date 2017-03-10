@@ -348,6 +348,40 @@ public class Query {
     }
     
     /**
+     * Gets the rating for a game by a user.
+     * 
+     * @param user the user
+     * @param game the game
+     * @return the rating the user gave the game
+     * @throws SQLException
+     */
+    public static int getGameRatingByUser(User user, Game game) throws SQLException {
+        if (conn == null) {
+            createConnection();
+        }
+        Statement stmt = null;
+        String query = "SELECT rating "
+                     + "FROM "+db+".UserRating "
+                     + "WHERE fk_gameId = " + game.getGameId() + " "
+                     + "AND fk_userId = " +user.getUserId()+ ";";
+        int rating = 0;
+        try {
+            stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            rs.next();
+            rating = rs.getInt("rating");
+            
+        } catch (SQLException e) {
+            System.out.println(e);
+        } finally {
+            if (stmt != null) {
+                stmt.close();
+            }
+        }
+        return rating;
+    }
+    
+    /**
      * Gets the average rating for the game.
      * 
      * @param game game to get rating for
