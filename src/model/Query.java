@@ -1,4 +1,6 @@
 package model;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -17,13 +19,23 @@ import java.util.Scanner;
  */
 public class Query {
 	
-	private static Scanner s = new Scanner("dbinfo.txt");
+	private static Scanner s = initScanner();
     
     private static String db = s.nextLine(); //Change to yours
     private static String userName = s.nextLine();
     private static String password = s.nextLine();
     private static String serverName = s.nextLine(); //cssgate.insttech.washington.edu
     private static Connection conn;
+    
+    private static Scanner initScanner() {
+    	Scanner s = null;
+    	try {
+			s = new Scanner(new File("dbinfo.txt"));
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+    	return s;
+    }
     
     /**
      * Creates a sql connection to MySQL using the properties for
