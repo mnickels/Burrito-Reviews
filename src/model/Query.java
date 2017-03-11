@@ -1,4 +1,6 @@
 package model;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -16,14 +18,28 @@ import java.util.Scanner;
  * @author Brian Jorgenson
  */
 public class Query {
-	
-	private static Scanner s = new Scanner("dbinfo.txt");
     
-    private static String db = s.nextLine(); //Change to yours
-    private static String userName = s.nextLine();
-    private static String password = s.nextLine();
-    private static String serverName = s.nextLine(); //cssgate.insttech.washington.edu
+    private static String db; //Change to yours
+    private static String userName;
+    private static String password;
+    private static String serverName; //cssgate.insttech.washington.edu
     private static Connection conn;
+    
+    static {
+    	Scanner s = null;
+    	try {
+			s = new Scanner(new File("dbinfo.txt"));
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+    	if (s != null) {
+    		db = s.nextLine();
+    		userName = s.nextLine();
+    		password = s.nextLine();
+    		serverName = s.nextLine();
+    		s.close();
+    	}
+    }
     
     /**
      * Creates a sql connection to MySQL using the properties for
@@ -71,7 +87,7 @@ public class Query {
                 stmt.close();
             }
         } catch (SQLException e) {
-            System.out.println(e);
+            e.printStackTrace();
         } 
         return valid;
     }
@@ -131,7 +147,7 @@ public class Query {
                 stmt.close();
             }
         } catch (SQLException e) {
-            System.out.println(e);
+            e.printStackTrace();
         }
         return user;
     }
@@ -164,7 +180,7 @@ public class Query {
                 stmt.close();
             }
         } catch (SQLException e) {
-            System.out.println(e);
+            e.printStackTrace();
         }
         return user;
     }
@@ -196,7 +212,7 @@ public class Query {
                 stmt.close();
             }
         } catch (SQLException e) {
-            System.out.println(e);
+            e.printStackTrace();
         }
         return users;
     }
@@ -367,7 +383,7 @@ public class Query {
                 stmt.close();
             }
         } catch (SQLException e) {
-            System.out.println(e);
+            e.printStackTrace();
         }
         return rating;
     }
@@ -396,7 +412,7 @@ public class Query {
                 stmt.close();
             }
         } catch (SQLException e) {
-            System.out.println(e);
+            e.printStackTrace();
         }
         return average;
     }
@@ -429,9 +445,21 @@ public class Query {
                 stmt.close();
             }
         } catch (SQLException e) {
-            System.out.println(e);
+            e.printStackTrace();
         }
         return games;
+    }
+    
+    /**
+     * @author Mike Nickels
+     */
+    public static Game getGameByName(String name) {
+    	for (Game g : getGames()) {
+    		if (g.getTitle().equalsIgnoreCase(name)) {
+    			return g;
+    		}
+    	}
+    	return null;
     }
     
     /**
@@ -470,7 +498,7 @@ public class Query {
                 stmt.close();
             }
         } catch (SQLException e) {
-            System.out.println(e);
+            e.printStackTrace();
         }
         return reviews;
     }
