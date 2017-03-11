@@ -412,7 +412,7 @@ public class GUI extends JFrame {
              */
             public void actionPerformed(final ActionEvent theButtonClick) {
             	System.out.println("EditingGame!");
-            	EditGamePromptPanel p = new EditGamePromptPanel(Query.getGameByName(gameTitle.getText()));
+            	EditGamePromptPanel p = new EditGamePromptPanel(Query.getGameByName((String) cb.getSelectedItem()));
             	
             	int button = JOptionPane.showConfirmDialog(null, p, "Edit Existing Game", JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
             	switch (button) {
