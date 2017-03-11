@@ -17,7 +17,11 @@ import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+
+import model.Query;
+import model.User;
 
 
 
@@ -58,13 +62,15 @@ public class GUI extends JFrame {
     
     private final JPanel myCardsEast;
     
+    private User currentUser;
+    
     /**
      *  Constructor for the GUI.
      */
     public GUI() {
         super();
 
-        myFrame = new JFrame("Game Review App");
+        myFrame = new JFrame("Burrito Reviews");
         myCardsWest = new JPanel(new CardLayout());
         myCardsSouth = new JPanel(new CardLayout());
         myCardsNorth = new JPanel(new CardLayout());
@@ -132,7 +138,7 @@ public class GUI extends JFrame {
         pw.setSize(TEXT_BOX_SIZE);
         final JTextField userName = new JTextField();
         userName.setPreferredSize(TEXT_BOX_SIZE);
-        final JTextField password = new JTextField();
+        final JPasswordField password = new JPasswordField();
         password.setPreferredSize(TEXT_BOX_SIZE);
         
         // padding to make login screen look correct
@@ -204,9 +210,18 @@ public class GUI extends JFrame {
             /**
              * This method opens myJFC OpenDialog box.
              * @param theButtonClick when the button action event takes place
+             * 
+             * @author Mike Nickels
              */
             public void actionPerformed(final ActionEvent theButtonClick) {
                 System.out.println("Login");
+                
+                StringBuilder sb = new StringBuilder();
+                for (char c : password.getPassword()) {
+                	sb.append(c);
+                }
+                currentUser = Query.getUserByNameAndPassword(userName.getText(), sb.toString());
+                
                 pageManagement(HOMEPANEL);
             }
         }
@@ -240,7 +255,7 @@ public class GUI extends JFrame {
              * @param theButtonClick when the button action event takes place
              */
             public void actionPerformed(final ActionEvent theButtonClick) {
-            	System.out.println("Register!");
+            	System.out.println("Reviewer!");
             	pageManagement(REVIEWERPANEL);
 
             	

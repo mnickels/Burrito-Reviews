@@ -635,5 +635,4 @@ public class Query {
         return successful;
     }
     
-    
 }
