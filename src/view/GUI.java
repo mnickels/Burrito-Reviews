@@ -403,6 +403,54 @@ public class GUI extends JFrame {
             }
         }
         addGame.addActionListener(new NewReviewButtonActionListener());
+		
+		class EditReviewButtonActionListener implements ActionListener {
+            
+            /**
+             * This method logs the user out.
+             * @param theButtonClick when the button action event takes place
+             */
+            public void actionPerformed(final ActionEvent theButtonClick) {
+            	System.out.println("EditingGame!");
+            	EditGamePromptPanel p = new EditGamePromptPanel(Query.getGameByName(gameTitle.getText()));
+            	
+            	int button = JOptionPane.showConfirmDialog(null, p, "Edit Existing Game", JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
+            	switch (button) {
+            	case JOptionPane.OK_OPTION:
+                	boolean success = Query.editGameTitle(p.getGameId(), p.getTitle());
+					success &= Query.editGameYear(p.getGameId(), p.getYear());
+					success &= Query.editGameESRB(p.getGameId(), p.getEsrb());
+					success &= Query.editGameDeveloper(p.getGameId(), p.getDevs());
+                	if (!success) {
+                		JOptionPane.showMessageDialog(null, "Failed to edit game due to improper inputs.");
+                	}
+            		break;
+            	case JOptionPane.CANCEL_OPTION:
+            		break;
+            	default:
+            		break;
+            	}
+            	pageManagement(ADMINPANEL);
+            }
+        }
+        editGame.addActionListener(new EditReviewButtonActionListener());
+        
+        /**
+         *  This class submits the review when the button is pressed.
+         */
+        class SubmitReviewButtonActionListener implements ActionListener {
+            
+            /**
+             * This method logs the user out.
+             * @param theButtonClick when the button action event takes place
+             */
+            public void actionPerformed(final ActionEvent theButtonClick) {
+            	System.out.println("Add New Game!");
+            	// needs to send the review to the database
+
+            }
+        }
+        addGame.addActionListener(new SubmitReviewButtonActionListener());
     }
     
     /**
