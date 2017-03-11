@@ -27,13 +27,18 @@ public class Query {
      * userid, password and server information.
      * @throws SQLException
      */
-    public static void createConnection() throws SQLException {
+    public static void createConnection() {
         Properties connectionProps = new Properties();
         connectionProps.put("user", userName);
         connectionProps.put("password", password);
 
-        conn = DriverManager.getConnection("jdbc:" + "mysql" + "://"
-                + serverName + "/", connectionProps);
+        try {
+            conn = DriverManager.getConnection("jdbc:" + "mysql" + "://"
+                    + serverName + "/", connectionProps);
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
     
     /**
@@ -42,9 +47,8 @@ public class Query {
      * @param name user name
      * @param password user password
      * @return true if user exists otherwise false
-     * @throws SQLException
      */
-    public static boolean isValidUser(String name, String password) throws SQLException {
+    public static boolean isValidUser(String name, String password) {
         if (conn == null) {
             createConnection();
         }
@@ -60,13 +64,12 @@ public class Query {
             ResultSet rs = stmt.executeQuery(query);
             rs.next();
             valid = rs.getBoolean("valid");
-        } catch (SQLException e) {
-            System.out.println(e);
-        } finally {
             if (stmt != null) {
                 stmt.close();
             }
-        }
+        } catch (SQLException e) {
+            System.out.println(e);
+        } 
         return valid;
     }
     
@@ -75,9 +78,8 @@ public class Query {
      * 
      * @param user user to add
      * @return true if successful otherwise false
-     * @throws SQLException
      */
-    public static boolean addUser(User user) throws SQLException {
+    public static boolean addUser(User user) {
         if (conn == null) {
             createConnection();
         }
@@ -105,9 +107,8 @@ public class Query {
      * 
      * @param id user id
      * @return the user
-     * @throws SQLException
      */
-    public static User getUserById(int id) throws SQLException {
+    public static User getUserById(int id) {
         if (conn == null) {
             createConnection();
         }
@@ -123,12 +124,11 @@ public class Query {
             String name = rs.getString("name");
             UserType type = UserType.valueOf(rs.getString("userType"));
             user = new User(id, name, type);
-        } catch (SQLException e) {
-            System.out.println(e);
-        } finally {
             if (stmt != null) {
                 stmt.close();
             }
+        } catch (SQLException e) {
+            System.out.println(e);
         }
         return user;
     }
@@ -139,10 +139,8 @@ public class Query {
      * @param name user name
      * @param password user password
      * @return the user
-     * @throws SQLException
      */
-    public static User getUserByNameAndPassword(String name, String password) 
-            throws SQLException {
+    public static User getUserByNameAndPassword(String name, String password) {
         if (conn == null) {
             createConnection();
         }
@@ -159,12 +157,11 @@ public class Query {
             int id = rs.getInt("userId");
             UserType type = UserType.valueOf(rs.getString("userType"));
             user = new User(id, name, type);
-        } catch (SQLException e) {
-            System.out.println(e);
-        } finally {
             if (stmt != null) {
                 stmt.close();
             }
+        } catch (SQLException e) {
+            System.out.println(e);
         }
         return user;
     }
@@ -173,9 +170,8 @@ public class Query {
      * Gets all users from the user table.
      * 
      * @return list of users
-     * @throws SQLException
      */
-    public static List<User> getUsers() throws SQLException {
+    public static List<User> getUsers() {
         if (conn == null) {
             createConnection();
         }
@@ -193,12 +189,11 @@ public class Query {
                 User user = new User(id, name, type);
                 users.add(user);
             }
-        } catch (SQLException e) {
-            System.out.println(e);
-        } finally {
             if (stmt != null) {
                 stmt.close();
             }
+        } catch (SQLException e) {
+            System.out.println(e);
         }
         return users;
     }
@@ -209,9 +204,8 @@ public class Query {
      * @param userId user to edit
      * @param name new name
      * @return true on success otherwise false
-     * @throws SQLException
      */
-    public static boolean editUserName(int userId, String name) throws SQLException {
+    public static boolean editUserName(int userId, String name) {
         if (conn == null) {
             createConnection();
         }
@@ -237,9 +231,8 @@ public class Query {
      * @param userId user to edit
      * @param type new type
      * @return true on success otherwise false
-     * @throws SQLException
      */
-    public static boolean editUserType(int userId, UserType type) throws SQLException {
+    public static boolean editUserType(int userId, UserType type) {
         if (conn == null) {
             createConnection();
         }
@@ -265,9 +258,8 @@ public class Query {
      * @param userId user to edit
      * @param password new password
      * @return true on success otherwise false
-     * @throws SQLException
      */
-    public static boolean editUserPassword(int userId, String password) throws SQLException {
+    public static boolean editUserPassword(int userId, String password) {
         if (conn == null) {
             createConnection();
         }
@@ -292,9 +284,8 @@ public class Query {
      * 
      * @param game game to add
      * @return true on successful add otherwise false
-     * @throws SQLException
      */
-    public static boolean addGame(Game game) throws SQLException {
+    public static boolean addGame(Game game) {
         if (conn == null) {
             createConnection();
         }
@@ -325,9 +316,8 @@ public class Query {
      * @param user the user that is rating
      * @param game the game that is being rated
      * @param rating the rating
-     * @throws SQLException
      */
-    public static void rateGame(User user, Game game, int rating) throws SQLException {
+    public static void rateGame(User user, Game game, int rating) {
         if (conn == null) {
             createConnection();
         }
@@ -354,9 +344,8 @@ public class Query {
      * @param user the user
      * @param game the game
      * @return the rating the user gave the game
-     * @throws SQLException
      */
-    public static int getGameRatingByUser(User user, Game game) throws SQLException {
+    public static int getGameRatingByUser(User user, Game game) {
         if (conn == null) {
             createConnection();
         }
@@ -371,13 +360,11 @@ public class Query {
             ResultSet rs = stmt.executeQuery(query);
             rs.next();
             rating = rs.getInt("rating");
-            
-        } catch (SQLException e) {
-            System.out.println(e);
-        } finally {
             if (stmt != null) {
                 stmt.close();
             }
+        } catch (SQLException e) {
+            System.out.println(e);
         }
         return rating;
     }
@@ -387,9 +374,8 @@ public class Query {
      * 
      * @param game game to get rating for
      * @return average of all user ratings
-     * @throws SQLException
      */
-    public static double getGameAvgRating(Game game) throws SQLException {
+    public static double getGameAvgRating(Game game) {
         if (conn == null) {
             createConnection();
         }
@@ -403,13 +389,11 @@ public class Query {
             ResultSet rs = stmt.executeQuery(query);
             rs.next();
             average = rs.getDouble("average");
-            
-        } catch (SQLException e) {
-            System.out.println(e);
-        } finally {
             if (stmt != null) {
                 stmt.close();
             }
+        } catch (SQLException e) {
+            System.out.println(e);
         }
         return average;
     }
@@ -418,9 +402,8 @@ public class Query {
      * Gets all games from game table.
      * 
      * @return list of games
-     * @throws SQLException
      */
-    public static List<Game> getGames() throws SQLException {
+    public static List<Game> getGames() {
         if (conn == null) {
             createConnection();
         }
@@ -439,12 +422,11 @@ public class Query {
                 Game game = new Game(id, title, developer, year, esrb);
                 games.add(game);
             }
-        } catch (SQLException e) {
-            System.out.println(e);
-        } finally {
             if (stmt != null) {
                 stmt.close();
             }
+        } catch (SQLException e) {
+            System.out.println(e);
         }
         return games;
     }
@@ -454,9 +436,8 @@ public class Query {
      * 
      * @param game the game
      * @return List<String> of reviews
-     * @throws SQLException
      */
-    public static List<String> getReviewsByGame(Game game)  throws SQLException {
+    public static List<String> getReviewsByGame(Game game) {
         return getReviewsByGameTitle(game.getTitle());
     }
     
@@ -465,9 +446,8 @@ public class Query {
      * 
      * @param title game title
      * @return List<String> of reviews
-     * @throws SQLException
      */
-    public static List<String> getReviewsByGameTitle(String title)  throws SQLException {
+    public static List<String> getReviewsByGameTitle(String title) {
         if (conn == null) {
             createConnection();
         }
@@ -483,12 +463,11 @@ public class Query {
                 String review = rs.getString("reviewText");
                 reviews.add(review);
             }
-        } catch (SQLException e) {
-            System.out.println(e);
-        } finally {
             if (stmt != null) {
                 stmt.close();
             }
+        } catch (SQLException e) {
+            System.out.println(e);
         }
         return reviews;
     }
@@ -500,9 +479,8 @@ public class Query {
      * @param user user linked to the review
      * @param reviewText new review text
      * @return true if successful otherwise false
-     * @throws SQLException
      */
-    public static boolean editReview(Game game, User user, String reviewText) throws SQLException {
+    public static boolean editReview(Game game, User user, String reviewText) {
         if (conn == null) {
             createConnection();
         }
@@ -529,9 +507,8 @@ public class Query {
      * @param gameId game to edit
      * @param title new title
      * @return true on success otherwise false
-     * @throws SQLException
      */
-    public static boolean editGameTitle(int gameId, String title) throws SQLException {
+    public static boolean editGameTitle(int gameId, String title) {
         if (conn == null) {
             createConnection();
         }
@@ -557,9 +534,8 @@ public class Query {
      * @param gameId game to edit
      * @param developer new developer
      * @return true on success otherwise false
-     * @throws SQLException
      */
-    public static boolean editGameDeveloper(int gameId, String developer) throws SQLException {
+    public static boolean editGameDeveloper(int gameId, String developer) {
         if (conn == null) {
             createConnection();
         }
@@ -585,9 +561,8 @@ public class Query {
      * @param gameId game to edit
      * @param year new year
      * @return true on success otherwise false
-     * @throws SQLException
      */
-    public static boolean editGameYear(int gameId, int year) throws SQLException {
+    public static boolean editGameYear(int gameId, int year) {
         if (conn == null) {
             createConnection();
         }
@@ -613,9 +588,8 @@ public class Query {
      * @param gameId game to edit
      * @param esrb new esrb
      * @return true on success otherwise false
-     * @throws SQLException
      */
-    public static boolean editGameESRB(int gameId, String esrb) throws SQLException {
+    public static boolean editGameESRB(int gameId, String esrb) {
         if (conn == null) {
             createConnection();
         }
