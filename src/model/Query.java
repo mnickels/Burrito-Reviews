@@ -532,6 +532,26 @@ public class Query {
         return successful;
     }
     
+    public static String getReview(Game game, User user) {
+    	if (conn == null) {
+            createConnection();
+        }
+        String sql = "SELECT reviwText FROM "+db+".GameReview "
+                + "WHERE fk_gameId = "+game.getGameId()+" "
+                + "AND fk_reviewerId = "+user.getUserId()+";";
+        PreparedStatement pstmt = null;
+        boolean successful = true;
+        try {
+            pstmt = conn.prepareStatement(sql);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e);
+            e.printStackTrace();
+            successful = false;
+        }
+        return pstmt.toString();
+    }
+    
     /**
      * Edit a games title.
      * 
