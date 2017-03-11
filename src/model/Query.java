@@ -8,6 +8,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.Scanner;
 
 /**
  * Queries to the database.
@@ -15,11 +16,13 @@ import java.util.Properties;
  * @author Brian Jorgenson
  */
 public class Query {
+	
+	private static Scanner s = new Scanner("dbinfo.txt");
     
-    private static String db = "445_database_system_design"; //Change to yours
-    private static String userName = "Brian";
-    private static String password = "localhost";
-    private static String serverName = "localhost"; //cssgate.insttech.washington.edu
+    private static String db = s.nextLine(); //Change to yours
+    private static String userName = s.nextLine();
+    private static String password = s.nextLine();
+    private static String serverName = s.nextLine(); //cssgate.insttech.washington.edu
     private static Connection conn;
     
     /**

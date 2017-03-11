@@ -10,6 +10,7 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -20,6 +21,7 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
+import model.Game;
 import model.Query;
 import model.User;
 
@@ -221,8 +223,19 @@ public class GUI extends JFrame {
                 	sb.append(c);
                 }
                 currentUser = Query.getUserByNameAndPassword(userName.getText(), sb.toString());
-                
-                pageManagement(HOMEPANEL);
+                if (currentUser != null) {
+                	switch (currentUser.getType()) {
+                	case USER:
+                		UserScreen();
+                		break;
+                	case REVIEWER:
+                		reviewerScreen();
+                		break;
+                	case ADMIN:
+                		adminScreen();
+                		break;
+                	}
+                }
             }
         }
         open.addActionListener(new LoginButtonActionListener());
@@ -239,8 +252,6 @@ public class GUI extends JFrame {
             public void actionPerformed(final ActionEvent theButtonClick) {
             	System.out.println("Register!");
             	pageManagement(REGISTRATIONPANEL);
-
-            	
             }
         }
         save.addActionListener(new SaveButtonActionListener());
@@ -257,8 +268,6 @@ public class GUI extends JFrame {
             public void actionPerformed(final ActionEvent theButtonClick) {
             	System.out.println("Reviewer!");
             	pageManagement(REVIEWERPANEL);
-
-            	
             }
         }
         reviewer.addActionListener(new ReviewerButtonActionListener());
@@ -296,8 +305,12 @@ public class GUI extends JFrame {
     	
     	// setting up the drop down list of games
         JPanel comboBoxPane = new JPanel(); //use FlowLayout
-        String comboBoxItems[] = {"Dark Souls","Dark Souls 2","Darkest Dungeon" }; // this needs to pull from the database
-        JComboBox cb = new JComboBox(comboBoxItems);
+        List<Game> games = Query.getGames();
+        String comboBoxItems[] = new String[games.size()];
+        for (int i = 0; i < games.size(); i++) {
+        	comboBoxItems[i] = games.get(i).getTitle();
+        }
+        JComboBox<String> cb = new JComboBox<String>(comboBoxItems);
         cb.setEditable(false);
         comboBoxPane.add(cb);
     	
