@@ -1,3 +1,4 @@
+package model;
 
 /**
  * Represents a video game with an id, title, developer, year and esrb.

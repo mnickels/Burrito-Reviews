@@ -1,3 +1,4 @@
+package model;
 
 /**
  * Represents a user with a userId, name, and userType.
