@@ -376,7 +376,7 @@ public class GUI extends JFrame {
         /**
          *  This class opens a new review text box when the button is pressed.
          */
-        class NewReviewButtonActionListener implements ActionListener {
+        class NewGameButtonActionListener implements ActionListener {
             
             /**
              * This method logs the user out.
@@ -402,9 +402,9 @@ public class GUI extends JFrame {
             	pageManagement(ADMINPANEL);
             }
         }
-        addGame.addActionListener(new NewReviewButtonActionListener());
+        addGame.addActionListener(new NewGameButtonActionListener());
 		
-		class EditReviewButtonActionListener implements ActionListener {
+		class EditGameButtonActionListener implements ActionListener {
             
             /**
              * This method logs the user out.
@@ -433,7 +433,7 @@ public class GUI extends JFrame {
             	pageManagement(ADMINPANEL);
             }
         }
-        editGame.addActionListener(new EditReviewButtonActionListener());
+        editGame.addActionListener(new EditGameButtonActionListener());
         
         /**
          *  This class submits the review when the button is pressed.
@@ -547,9 +547,6 @@ public class GUI extends JFrame {
         }
         close.addActionListener(new CloseButtonActionListener());
         
-        /**
-         *  This class opens a new review text box when the button is pressed.
-         */
         class NewReviewButtonActionListener implements ActionListener {
             
             /**
@@ -557,31 +554,57 @@ public class GUI extends JFrame {
              * @param theButtonClick when the button action event takes place
              */
             public void actionPerformed(final ActionEvent theButtonClick) {
-            	System.out.println("NewReview!");
-            	// needs to open up a review text box
-            	pageManagement(REVIEWERPANEL);
+            	System.out.println("NewGame!");
+            	NewGamePromptPanel p = new NewGamePromptPanel();
+            	
+            	int button = JOptionPane.showConfirmDialog(null, p, "Add New Game", JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
+            	switch (button) {
+            	case JOptionPane.OK_OPTION:
+                	boolean success = Query.addGame(p.getGame());
+                	if (!success) {
+                		JOptionPane.showMessageDialog(null, "Failed to add Game due to improper inputs.");
+                	}
+            		break;
+            	case JOptionPane.CANCEL_OPTION:
+            		break;
+            	default:
+            		break;
+            	}
+            	pageManagement(ADMINPANEL);
             }
         }
-        newReview.addActionListener(new NewReviewButtonActionListener());
-        
-        /**
-         *  This class submits the review when the button is pressed.
-         */
-        class SubmitReviewButtonActionListener implements ActionListener {
+        //addGame.addActionListener(new NewReviewButtonActionListener());
+		
+		class EditReviewButtonActionListener implements ActionListener {
             
             /**
              * This method logs the user out.
              * @param theButtonClick when the button action event takes place
              */
             public void actionPerformed(final ActionEvent theButtonClick) {
-            	System.out.println("Submitted Review!");
-            	// needs to send the review to the database
-
+            	System.out.println("EditingGame!");
+            	EditGamePromptPanel p = new EditGamePromptPanel(Query.getGameByName(gameTitle.getText()));
+            	
+            	int button = JOptionPane.showConfirmDialog(null, p, "Edit Existing Game", JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
+            	switch (button) {
+            	case JOptionPane.OK_OPTION:
+                	boolean success = Query.editGameTitle(p.getGameId(), p.getTitle());
+					success &= Query.editGameYear(p.getGameId(), p.getYear());
+					success &= Query.editGameESRB(p.getGameId(), p.getEsrb());
+					success &= Query.editGameDeveloper(p.getGameId(), p.getDevs());
+                	if (!success) {
+                		JOptionPane.showMessageDialog(null, "Failed to edit game due to improper inputs.");
+                	}
+            		break;
+            	case JOptionPane.CANCEL_OPTION:
+            		break;
+            	default:
+            		break;
+            	}
+            	pageManagement(ADMINPANEL);
             }
         }
-        submitReview.addActionListener(new SubmitReviewButtonActionListener());
-        
-        
+        //editGame.addActionListener(new EditReviewButtonActionListener());
     }
     
     /**
