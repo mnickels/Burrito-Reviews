@@ -7,16 +7,26 @@ import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.util.Comparator;
 import java.util.List;
 
+import javax.imageio.ImageIO;
 import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
@@ -24,6 +34,7 @@ import javax.swing.JTextField;
 import model.Game;
 import model.Query;
 import model.User;
+import model.UserType;
 
 
 
@@ -31,6 +42,7 @@ import model.User;
  * This is the GUI class that will create the front end of the program.
  * 
  * @author Thomas Schmidt
+ * @author Mike Nickels
  * @version 1.0
  */
 public class GUI extends JFrame {
@@ -66,6 +78,8 @@ public class GUI extends JFrame {
     
     private User currentUser;
     
+    public static Image logo;
+    
     /**
      *  Constructor for the GUI.
      */
@@ -78,6 +92,17 @@ public class GUI extends JFrame {
         myCardsNorth = new JPanel(new CardLayout());
         myCardsCenter = new JPanel(new CardLayout());
         myCardsEast = new JPanel(new CardLayout());
+        
+        logo = null;
+        try {
+			logo = ImageIO.read(new File("burrito.png"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+        
+        if (logo != null) {
+        	myFrame.setIconImage(logo);
+        }
     }
 
     /**
@@ -126,15 +151,17 @@ public class GUI extends JFrame {
     	JPanel westCard = new JPanel();
     	centerCard.setLayout(new BoxLayout(centerCard, BoxLayout.Y_AXIS));
     	
-    	// temp buttons
-        final JButton admin = new JButton("Admin");
-        final JButton reviewer = new JButton("Reviewer");
-    	
     	// button field and label creation
         final JButton open = new JButton("Login");
         final JButton save = new JButton("Register");
         final JLabel un = new JLabel("UserName");
-        final JLabel grt = new JLabel("GAME REVIEW TITLE");
+        final JLabel grt = new JLabel(Frame.APP_NAME);
+		grt.setForeground(new Color(72, 64, 188));
+		Font titleFont = new Font("Garamond", Font.BOLD, 72);
+		grt.setFont(titleFont);
+		add(grt);
+		JLabel img = null;
+		img = new JLabel(new ImageIcon(logo.getScaledInstance(64, 64, BufferedImage.SCALE_FAST)));
         un.setSize(TEXT_BOX_SIZE);
         final JLabel pw = new JLabel("Password");
         pw.setSize(TEXT_BOX_SIZE);
@@ -169,12 +196,9 @@ public class GUI extends JFrame {
         eastCard.add(padding19);
         westCard.add(padding20);
         northCard.add(grt);
+        northCard.add(img);
         southCard.add(open);
-        southCard.add(save); 
-        southCard.add(admin);
-        southCard.add(reviewer);
-        centerCard.add(padding1);
-        centerCard.add(padding2);
+        southCard.add(save);
         centerCard.add(padding3);
         centerCard.add(padding4);
         centerCard.add(padding5);
@@ -202,7 +226,7 @@ public class GUI extends JFrame {
         myCardsEast.add(eastCard, LOGINPANEL);
         myCardsWest.add(westCard, LOGINPANEL);
 
-        
+        pack();
         
         /**
          *  This class switches to the Homepage when the Login button is pressed.
@@ -213,7 +237,7 @@ public class GUI extends JFrame {
              * This method opens myJFC OpenDialog box.
              * @param theButtonClick when the button action event takes place
              * 
-             * @author Mike Nickels
+             * 
              */
             public void actionPerformed(final ActionEvent theButtonClick) {
                 System.out.println("Login");
@@ -223,16 +247,17 @@ public class GUI extends JFrame {
                 	sb.append(c);
                 }
                 currentUser = Query.getUserByNameAndPassword(userName.getText(), sb.toString());
+                System.out.println(currentUser);
                 if (currentUser != null) {
                 	switch (currentUser.getType()) {
-                	case USER:
-                		UserScreen();
+                	case User:
+                		pageManagement(HOMEPANEL);
                 		break;
-                	case REVIEWER:
-                		reviewerScreen();
+                	case Reviewer:
+                    	pageManagement(REVIEWERPANEL);
                 		break;
-                	case ADMIN:
-                		adminScreen();
+                	case Admin:
+                		pageManagement(ADMINPANEL);
                 		break;
                 	}
                 }
@@ -255,39 +280,6 @@ public class GUI extends JFrame {
             }
         }
         save.addActionListener(new SaveButtonActionListener());
-        
-        /**
-         *  This class calls showSaveDialog() when the Save button is pressed.
-         */
-        class ReviewerButtonActionListener implements ActionListener {
-            
-            /**
-             * This method opens myJFC saveDialog box.
-             * @param theButtonClick when the button action event takes place
-             */
-            public void actionPerformed(final ActionEvent theButtonClick) {
-            	System.out.println("Reviewer!");
-            	pageManagement(REVIEWERPANEL);
-            }
-        }
-        reviewer.addActionListener(new ReviewerButtonActionListener());
-        
-        /**
-         *  This class calls showSaveDialog() when the Save button is pressed.
-         */
-        class AdminButtonActionListener implements ActionListener {
-            
-            /**
-             * This method opens myJFC saveDialog box.
-             * @param theButtonClick when the button action event takes place
-             */
-            public void actionPerformed(final ActionEvent theButtonClick) {
-                	pageManagement(ADMINPANEL);
-
-            	
-            }
-        }
-        admin.addActionListener(new AdminButtonActionListener());
     }
     
     /**
@@ -305,11 +297,13 @@ public class GUI extends JFrame {
     	
     	// setting up the drop down list of games
         JPanel comboBoxPane = new JPanel(); //use FlowLayout
+        
         List<Game> games = Query.getGames();
         String comboBoxItems[] = new String[games.size()];
         for (int i = 0; i < games.size(); i++) {
         	comboBoxItems[i] = games.get(i).getTitle();
         }
+        
         JComboBox<String> cb = new JComboBox<String>(comboBoxItems);
         cb.setEditable(false);
         comboBoxPane.add(cb);
@@ -319,9 +313,14 @@ public class GUI extends JFrame {
         final JButton editGame = new JButton("Edit Game");
         final JButton addGame = new JButton("Add Game");
         final JLabel gameTitle = new JLabel("Game Title");
-        final JLabel gameScore = new JLabel("Game Score: ");
-        final JLabel gameRating = new JLabel("****/*****"); // needs to pull data from database to display rating based off each game
-        final JLabel review = new JLabel("New Review:");
+
+        // burrito rating
+        BurritoScore bs = new BurritoScore((int) Math.round(Query.getGameAvgRating(Query.getGameByName((String) cb.getSelectedItem()))), false);
+        
+        final JLabel review = new JLabel("Reviews:");
+        
+        // reviews
+        final JPanel
         
         // padding
         final JLabel padding1 = new JLabel(" ");
@@ -332,8 +331,7 @@ public class GUI extends JFrame {
         // adding components to cards
         northCard.add(gameTitle);
         northCard.add(comboBoxPane);
-        northCard.add(gameScore);
-        northCard.add(gameRating);
+        northCard.add(bs);
         southCard.add(addGame);
         southCard.add(editGame);
         southCard.add(close); 
@@ -347,6 +345,18 @@ public class GUI extends JFrame {
         myCardsCenter.add(centerCard, ADMINPANEL);
         myCardsEast.add(eastCard, ADMINPANEL);
         myCardsWest.add(westCard, ADMINPANEL);
+        
+        class ComboBoxActionListener implements ActionListener {
+        	@Override
+        	public void actionPerformed(ActionEvent e) {
+        		String gameTitle = (String) cb.getSelectedItem();
+				final int burritos = (int) Math.round(Query.getGameAvgRating(Query.getGameByName(gameTitle)));
+		        bs.setScore(burritos);
+		        revalidate();
+		        repaint();
+        	}
+        }
+        cb.addActionListener(new ComboBoxActionListener());
         
         /**
          *  This class logs the user out when the button is pressed.
@@ -375,10 +385,25 @@ public class GUI extends JFrame {
              */
             public void actionPerformed(final ActionEvent theButtonClick) {
             	System.out.println("NewGame!");
-            	// needs to open up a review text box
+            	NewGamePromptPanel p = new NewGamePromptPanel();
+            	
+            	int button = JOptionPane.showConfirmDialog(null, p, "Add New Game", JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
+            	switch (button) {
+            	case JOptionPane.OK_OPTION:
+                	boolean success = Query.addGame(p.getGame());
+                	if (!success) {
+                		JOptionPane.showMessageDialog(null, "Failed to add Game due to improper inputs.");
+                	}
+            		break;
+            	case JOptionPane.CANCEL_OPTION:
+            		break;
+            	default:
+            		break;
+            	}
+            	pageManagement(ADMINPANEL);
             }
         }
-        editGame.addActionListener(new NewReviewButtonActionListener());
+        addGame.addActionListener(new NewReviewButtonActionListener());
         
         /**
          *  This class submits the review when the button is pressed.
@@ -413,8 +438,14 @@ public class GUI extends JFrame {
     	
     	// setting up the drop down list of games
         JPanel comboBoxPane = new JPanel(); //use FlowLayout
-        String comboBoxItems[] = {"Dark Souls","Dark Souls 2","Darkest Dungeon" }; // this needs to pull from the database
-        JComboBox cb = new JComboBox(comboBoxItems);
+        
+        List<Game> games = Query.getGames();
+        String comboBoxItems[] = new String[games.size()];
+        for (int i = 0; i < games.size(); i++) {
+        	comboBoxItems[i] = games.get(i).getTitle();
+        }
+        JComboBox<String> cb = new JComboBox<String>(comboBoxItems);
+        
         cb.setEditable(false);
         comboBoxPane.add(cb);
     	
@@ -423,8 +454,10 @@ public class GUI extends JFrame {
         final JButton newReview = new JButton("New Review");
         final JButton submitReview = new JButton("Submit Review");
         final JLabel gameTitle = new JLabel("Game Title");
-        final JLabel gameScore = new JLabel("Game Score: ");
-        final JLabel gameRating = new JLabel("****/*****"); // needs to pull data from database to display rating based off each game
+
+        // burrito rating
+        BurritoScore bs = new BurritoScore((int) Math.round(Query.getGameAvgRating(Query.getGameByName((String) cb.getSelectedItem()))), false);
+        
         final JLabel review = new JLabel("New Review:");
         
         // padding
@@ -436,8 +469,7 @@ public class GUI extends JFrame {
         // adding components to cards
         northCard.add(gameTitle);
         northCard.add(comboBoxPane);
-        northCard.add(gameScore);
-        northCard.add(gameRating);
+        northCard.add(bs);
         southCard.add(newReview);
         southCard.add(submitReview);
         southCard.add(close); 
@@ -451,6 +483,18 @@ public class GUI extends JFrame {
         myCardsCenter.add(centerCard, REVIEWERPANEL);
         myCardsEast.add(eastCard, REVIEWERPANEL);
         myCardsWest.add(westCard, REVIEWERPANEL);
+        
+        class ComboBoxActionListener implements ActionListener {
+        	@Override
+        	public void actionPerformed(ActionEvent e) {
+        		String gameTitle = (String) cb.getSelectedItem();
+				final int burritos = (int) Math.round(Query.getGameAvgRating(Query.getGameByName(gameTitle)));
+		        bs.setScore(burritos);
+		        revalidate();
+		        repaint();
+        	}
+        }
+        cb.addActionListener(new ComboBoxActionListener());
         
         /**
          *  This class logs the user out when the button is pressed.
@@ -518,16 +562,33 @@ public class GUI extends JFrame {
     	
     	// setting up the drop down list of games
         JPanel comboBoxPane = new JPanel(); //use FlowLayout
-        String comboBoxItems[] = {"Dark Souls","Dark Souls 2","Darkest Dungeon" }; // this needs to pull from the database
-        JComboBox cb = new JComboBox(comboBoxItems);
+        
+        List<Game> games = Query.getGames();
+        // sort
+        games.sort(new Comparator<Game>() {
+			@Override
+			public int compare(Game g0, Game g1) {
+				return g0.getTitle().compareTo(g1.getTitle());
+			}
+        });
+        
+        String comboBoxItems[] = new String[games.size()];
+        // add to combobox
+        for (int i = 0; i < games.size(); i++) {
+        	comboBoxItems[i] = games.get(i).getTitle();
+        }
+        JComboBox<String> cb = new JComboBox<String>(comboBoxItems);
+        
         cb.setEditable(false);
         comboBoxPane.add(cb);
     	
         // constructing the button and text fields
         final JButton close = new JButton("Logout");
         final JLabel gameTitle = new JLabel("Game Title");
-        final JLabel gameScore = new JLabel("Game Score: ");
-        final JLabel gameRating = new JLabel("****/*****"); // needs to pull data from database to display rating based off each game
+
+        // burrito rating
+        BurritoScore bs = new BurritoScore((int) Math.round(Query.getGameAvgRating(Query.getGameByName((String) cb.getSelectedItem()))), false);
+        
         final JLabel review = new JLabel("Reviews:");
         
         // padding
@@ -539,8 +600,8 @@ public class GUI extends JFrame {
         // adding components to cards
         northCard.add(gameTitle);
         northCard.add(comboBoxPane);
-        northCard.add(gameScore);
-        northCard.add(gameRating);
+//        northCard.add(gameScore);
+        northCard.add(bs);
         southCard.add(close);        
         centerCard.add(review);
         eastCard.add(padding1);
@@ -552,6 +613,18 @@ public class GUI extends JFrame {
         myCardsCenter.add(centerCard, HOMEPANEL);
         myCardsEast.add(eastCard, HOMEPANEL);
         myCardsWest.add(westCard, HOMEPANEL);
+        
+        class ComboBoxActionListener implements ActionListener {
+        	@Override
+        	public void actionPerformed(ActionEvent e) {
+        		String gameTitle = (String) cb.getSelectedItem();
+				final int burritos = (int) Math.round(Query.getGameAvgRating(Query.getGameByName(gameTitle)));
+		        bs.setScore(burritos);
+		        revalidate();
+		        repaint();
+        	}
+        }
+        cb.addActionListener(new ComboBoxActionListener());
         
         /**
          *  This class logs the user out when the button is pressed.
@@ -589,9 +662,10 @@ public class GUI extends JFrame {
         final JLabel dun = new JLabel("Desired UserName");
         final JLabel dpw = new JLabel("Desired Password");
         final JButton save = new JButton("Submit");
+        final JButton cancel = new JButton("Cancel");
         final JTextField userName = new JTextField();
         userName.setPreferredSize(TEXT_BOX_SIZE);
-        final JTextField password = new JTextField();
+        final JPasswordField password = new JPasswordField();
         password.setPreferredSize(TEXT_BOX_SIZE);
         final JTextField fullName = new JTextField();
         fullName.setPreferredSize(TEXT_BOX_SIZE);
@@ -649,6 +723,7 @@ public class GUI extends JFrame {
 
         
         southCard.add(save);
+        southCard.add(cancel);
         
         // adding cards to pack of cards
         myCardsNorth.add(northCard, REGISTRATIONPANEL);
@@ -669,18 +744,37 @@ public class GUI extends JFrame {
              */
             public void actionPerformed(final ActionEvent theButtonClick) {
             	System.out.println("Submit!");
+            	StringBuilder sb = new StringBuilder();
+            	for (char c : password.getPassword()) {
+            		sb.append(c);
+            	}
+            	Query.addUser(new User(userName.getText(), UserType.User, sb.toString()));
             	pageManagement(LOGINPANEL);
-            	// needs to send the data to the database
-
             }
         }
         save.addActionListener(new SaveButtonActionListener());
+        cancel.addActionListener(new ActionListener() {
+        	@Override
+        	public void actionPerformed(ActionEvent e) {
+        		pageManagement(LOGINPANEL);
+        	}
+        });
     }
     
     /**
      * This method manages what page is visible at what time
      */
     private void pageManagement(String theName) {
+    	myCardsSouth.invalidate();
+    	myCardsSouth.repaint();
+    	myCardsNorth.invalidate();
+    	myCardsNorth.repaint();
+    	myCardsCenter.invalidate();
+    	myCardsCenter.repaint();
+    	myCardsWest.invalidate();
+    	myCardsWest.repaint();
+    	myCardsEast.invalidate();
+    	myCardsEast.repaint();
         CardLayout cl1 = (CardLayout)(myCardsSouth.getLayout());
         cl1.show(myCardsSouth, theName);
         CardLayout cl2 = (CardLayout)(myCardsCenter.getLayout());
