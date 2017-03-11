@@ -427,7 +427,8 @@ public class Query {
             createConnection();
         }
         Statement stmt = null;
-        String query = "SELECT * FROM "+db+".Game";
+        String query = "SELECT * FROM "+db+".Game"
+        		+ "ORDER BY title ASC;";
         List<Game> games = new ArrayList<Game>();
         try {
             stmt = conn.createStatement();

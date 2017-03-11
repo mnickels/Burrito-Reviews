@@ -580,6 +580,8 @@ public class GUI extends JFrame {
             }
         }
         submitReview.addActionListener(new SubmitReviewButtonActionListener());
+        
+        
     }
     
     /**
@@ -599,13 +601,6 @@ public class GUI extends JFrame {
         JPanel comboBoxPane = new JPanel(); //use FlowLayout
         
         List<Game> games = Query.getGames();
-        // sort
-        games.sort(new Comparator<Game>() {
-			@Override
-			public int compare(Game g0, Game g1) {
-				return g0.getTitle().compareTo(g1.getTitle());
-			}
-        });
         
         String comboBoxItems[] = new String[games.size()];
         // add to combobox
