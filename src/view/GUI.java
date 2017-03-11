@@ -404,6 +404,37 @@ public class GUI extends JFrame {
             }
         }
         addGame.addActionListener(new NewReviewButtonActionListener());
+		
+		class EditReviewButtonActionListener implements ActionListener {
+            
+            /**
+             * This method logs the user out.
+             * @param theButtonClick when the button action event takes place
+             */
+            public void actionPerformed(final ActionEvent theButtonClick) {
+            	System.out.println("EditingGame!");
+            	EditGamePromptPanel p = new EditGamePromptPanel();
+            	
+            	int button = JOptionPane.showConfirmDialog(null, p, "Edit Existing Game", JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
+            	switch (button) {
+            	case JOptionPane.OK_OPTION:
+                	boolean success = Query.editGameTitle(p.getGameId());
+					success &= Query.editGameYear(p.getGameId());
+					success &= Query.editGameEsrb(p.getGameId());
+					success &= Query.editGameDeveloper(p.getGameId());
+                	if (!success) {
+                		JOptionPane.showMessageDialog(null, "Failed to edit game due to improper inputs.");
+                	}
+            		break;
+            	case JOptionPane.CANCEL_OPTION:
+            		break;
+            	default:
+            		break;
+            	}
+            	pageManagement(ADMINPANEL);
+            }
+        }
+        editGame.addActionListener(new EditReviewButtonActionListener());
         
         /**
          *  This class submits the review when the button is pressed.
