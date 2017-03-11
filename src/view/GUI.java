@@ -7,7 +7,6 @@ import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Image;
 import java.awt.Toolkit;
@@ -29,6 +28,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 import model.Game;
@@ -60,6 +60,8 @@ public class GUI extends JFrame {
     final static String REVIEWERPANEL = "Reviewer Home Screen";
     final static String REGISTRATIONPANEL = "Registration Screen";
     final static String ADMINPANEL = "Admin Screen";
+    
+    public final static String APP_NAME = "Burrito Reviews";
     
     //Fields    
     /** This is the JFrame that will pop up when the program runs. */
@@ -155,7 +157,7 @@ public class GUI extends JFrame {
         final JButton open = new JButton("Login");
         final JButton save = new JButton("Register");
         final JLabel un = new JLabel("UserName");
-        final JLabel grt = new JLabel(Frame.APP_NAME);
+        final JLabel grt = new JLabel(APP_NAME);
 		grt.setForeground(new Color(72, 64, 188));
 		Font titleFont = new Font("Garamond", Font.BOLD, 72);
 		grt.setFont(titleFont);
@@ -319,9 +321,6 @@ public class GUI extends JFrame {
         
         final JLabel review = new JLabel("Reviews:");
         
-        // reviews
-        final JPanel
-        
         // padding
         final JLabel padding1 = new JLabel(" ");
         final JLabel padding2 = new JLabel(" ");
@@ -404,23 +403,6 @@ public class GUI extends JFrame {
             }
         }
         addGame.addActionListener(new NewReviewButtonActionListener());
-        
-        /**
-         *  This class submits the review when the button is pressed.
-         */
-        class SubmitReviewButtonActionListener implements ActionListener {
-            
-            /**
-             * This method logs the user out.
-             * @param theButtonClick when the button action event takes place
-             */
-            public void actionPerformed(final ActionEvent theButtonClick) {
-            	System.out.println("Add New Game!");
-            	// needs to send the review to the database
-
-            }
-        }
-        addGame.addActionListener(new SubmitReviewButtonActionListener());
     }
     
     /**
@@ -463,6 +445,11 @@ public class GUI extends JFrame {
         // padding
         final JLabel padding1 = new JLabel(" ");
         final JLabel padding2 = new JLabel(" ");
+        
+        // own review
+        final JLabel myReview = new JLabel("My Review:");
+        final JTextArea reviewbox = new JTextArea();
+        reviewbox.setEditable(false);
         
         // needs some code to pull from database and display all reviews
         
