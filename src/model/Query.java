@@ -517,8 +517,8 @@ public class Query {
         }
         String sql = "UPDATE "+db+".GameReview "
                 + "SET  reviewText = \""+reviewText+"\" "
-                + "WHERE gameId = "+game.getGameId()+" "
-                + "AND userId = "+user.getUserId()+";";
+                + "WHERE fk_gameId = "+game.getGameId()+" "
+                + "AND fk_userId = "+user.getUserId()+";";
         PreparedStatement pstmt = null;
         boolean successful = true;
         try {
@@ -540,14 +540,12 @@ public class Query {
                 + "WHERE fk_gameId = "+game.getGameId()+" "
                 + "AND fk_reviewerId = "+user.getUserId()+";";
         PreparedStatement pstmt = null;
-        boolean successful = true;
         try {
             pstmt = conn.prepareStatement(sql);
             pstmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println(e);
             e.printStackTrace();
-            successful = false;
         }
         return pstmt.toString();
     }
