@@ -25,11 +25,14 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
 
 import model.Game;
 import model.Query;
@@ -640,6 +643,8 @@ public class GUI extends JFrame {
     	JPanel westCard = new JPanel();
     	centerCard.setLayout(new BoxLayout(centerCard, BoxLayout.Y_AXIS));
     	
+    	
+    	
     	// setting up the drop down list of games
         JPanel comboBoxPane = new JPanel(); //use FlowLayout
         
@@ -655,6 +660,20 @@ public class GUI extends JFrame {
         cb.setEditable(false);
         comboBoxPane.add(cb);
     	
+        // setting up the scroll pane
+        JPanel jpAcc = new JPanel();
+        jpAcc.setLayout(new BorderLayout());
+        String labels[] = {"Test 1"};
+     
+        JList checkBoxesJList = new JList<String>(labels);
+
+        checkBoxesJList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        JScrollPane scrollPane = new JScrollPane(checkBoxesJList);
+        jpAcc.add(scrollPane);
+
+        getContentPane().add(jpAcc);
+        pack();
+        
         // constructing the button and text fields
         final JButton close = new JButton("Logout");
         final JLabel gameTitle = new JLabel("Game Title");
@@ -677,6 +696,7 @@ public class GUI extends JFrame {
         northCard.add(bs);
         southCard.add(close);        
         centerCard.add(review);
+        centerCard.add(jpAcc);
         eastCard.add(padding1);
         westCard.add(padding2);
 
