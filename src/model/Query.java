@@ -25,21 +25,21 @@ public class Query {
     private static String serverName = "localhost"; //cssgate.insttech.washington.edu
     private static Connection conn;
     
-//    static {
-//    	Scanner s = null;
-//    	try {
-//			s = new Scanner(new File("dbinfo.txt"));
-//		} catch (FileNotFoundException e) {
-//			e.printStackTrace();
-//		}
-//    	if (s != null) {
-//    		db = s.nextLine();
-//    		userName = s.nextLine();
-//    		password = s.nextLine();
-//    		serverName = s.nextLine();
-//    		s.close();
-//    	}
-//    }
+    static {
+    	Scanner s = null;
+    	try {
+			s = new Scanner(new File("dbinfo.txt"));
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+    	if (s != null) {
+    		db = s.nextLine();
+    		userName = s.nextLine();
+    		password = s.nextLine();
+    		serverName = s.nextLine();
+    		s.close();
+    	}
+    }
     
     /**
      * Creates a sql connection to MySQL using the properties for
