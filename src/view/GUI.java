@@ -325,6 +325,8 @@ public class GUI extends JFrame {
         final JLabel padding1 = new JLabel(" ");
         final JLabel padding2 = new JLabel(" ");
         
+        final JButton delGame = new JButton("Delete");
+        
         // needs some code to pull from database and display all reviews
         
         // adding components to cards
@@ -333,6 +335,7 @@ public class GUI extends JFrame {
         northCard.add(bs);
         southCard.add(addGame);
         southCard.add(editGame);
+        southCard.add(delGame);
         southCard.add(close); 
         centerCard.add(review);
         eastCard.add(padding1);
@@ -399,10 +402,27 @@ public class GUI extends JFrame {
             	default:
             		break;
             	}
+            	invalidate();
+            	repaint();
             	pageManagement(ADMINPANEL);
             }
         }
         addGame.addActionListener(new NewGameButtonActionListener());
+        
+        class DeleteGameButtonActionListener implements ActionListener {
+            
+            /**
+             * This method logs the user out.
+             * @param theButtonClick when the button action event takes place
+             */
+            public void actionPerformed(final ActionEvent theButtonClick) {
+            	Query.removeGame(Query.getGameByName((String) cb.getSelectedItem()));
+            	invalidate();
+            	repaint();
+            	pageManagement(ADMINPANEL);
+            }
+        }
+        delGame.addActionListener(new DeleteGameButtonActionListener());
 		
 		class EditGameButtonActionListener implements ActionListener {
             
