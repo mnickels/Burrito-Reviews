@@ -419,6 +419,41 @@ public class Query {
     }
     
     /**
+     * Gets all games order by their average rating, ascending.
+     * 
+     * @return list of games in order by average rating, ascending.
+     */
+    public static List<Game> getGamesByAvgRating() {
+        Statement stmt = null;
+        String query = "SELECT gameId, title, developer, genre, `year`, ersb, SUM(rating) AS \"sum\" "
+                     + "FROM "+db+".Game, "+db+".UserRating "
+                     + "WHERE gameID = fk_gameId "
+                     + "GROUP BY gameId "
+                     + "ORDER BY \"sum\" ASC;";
+        List<Game> games = new ArrayList<Game>();
+        try {
+            stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            while (rs.next()) {
+                int id = rs.getInt("gameId");
+                String title = rs.getString("title");
+                String developer = rs.getString("developer");
+                String genre = rs.getString("genre");
+                int year = rs.getInt("year");
+                String esrb = rs.getString("esrb");
+                Game game = new Game(id, title, developer, genre, year, esrb);
+                games.add(game);
+            }
+            if (stmt != null) {
+                stmt.close();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return games;
+    }
+    
+    /**
      * Gets all games order by genre.
      * 
      * @return list of games order by genre
