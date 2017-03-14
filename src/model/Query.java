@@ -133,7 +133,7 @@ public class Query {
         }
         Statement stmt = null;
         String query = "SELECT `name`, userType "
-                     + "FROM "+db+".User "
+                     + "FROM "+db+".`User` "
                      + "WHERE userId = " + id;
         User user = null;
         try {
