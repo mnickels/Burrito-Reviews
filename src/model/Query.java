@@ -419,6 +419,44 @@ public class Query {
     }
     
     /**
+     * Gets all games sorted by review count, ascending.
+     * 
+     * @return list of games sorted by review count, ascending
+     */
+    public static List<Game> getGamesByReviewCount() {
+        if (conn == null) {
+            createConnection();
+        }
+        Statement stmt = null;
+        String query = "SELECT gameId, title, developer, genre, `year`, esrb "
+                     + "FROM "+db+".Game, "+db+".GameReview "
+                     + "WHERE gameID = fk_gameId "
+                     + "GROUP BY gameId "
+                     + "ORDER BY count(reviewText) ASC;";
+        List<Game> games = new ArrayList<Game>();
+        try {
+            stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            while (rs.next()) {
+                int id = rs.getInt("gameId");
+                String title = rs.getString("title");
+                String developer = rs.getString("developer");
+                String genre = rs.getString("genre");
+                int year = rs.getInt("year");
+                String esrb = rs.getString("esrb");
+                Game game = new Game(id, title, developer, genre, year, esrb);
+                games.add(game);
+            }
+            if (stmt != null) {
+                stmt.close();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return games;
+    }
+    
+    /**
      * Gets all games order by their average rating, ascending.
      * 
      * @return list of games in order by average rating, ascending.
