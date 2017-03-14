@@ -15,6 +15,7 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
@@ -85,6 +86,10 @@ public class GUI extends JFrame {
     
     private User currentUser;
     
+    ArrayList<String> myGames = new ArrayList<String>();
+
+    JComboBox<String> myCB = new JComboBox<String>();
+    
     public static Image logo;
     
     /**
@@ -93,6 +98,15 @@ public class GUI extends JFrame {
     public GUI() {
         super();
 
+     // populating on boot
+        List<Game> games = Query.getGames();
+        for (int i = 0; i < games.size(); i++) {
+        	myGames.add(games.get(i).getTitle());
+        }
+        for(String str : myGames) {
+     	   myCB.addItem(str);
+        }
+        
         myFrame = new JFrame("Burrito Reviews");
         myCardsWest = new JPanel(new CardLayout());
         myCardsSouth = new JPanel(new CardLayout());
@@ -144,6 +158,24 @@ public class GUI extends JFrame {
         myFrame.setVisible(true);
                
     }
+    
+    public void RefreshComboBoxGames() { 
+    	
+
+    	myCB.removeAllItems();
+    	System.out.println(myCB.toString());
+    	myGames.clear();
+    	List<Game> games = Query.getGames();
+        for (int i = 0; i < games.size(); i++) {
+        	myGames.add(games.get(i).getTitle());
+        } 
+        System.out.println(myGames.size());
+        
+        for(String str : myGames) {
+      	   myCB.addItem(str);
+         }
+    }
+    
     
     /**
      * This method builds the Bottom options buttons.
@@ -303,17 +335,23 @@ public class GUI extends JFrame {
     	centerCard.setLayout(new BoxLayout(centerCard, BoxLayout.Y_AXIS));
     	
     	// setting up the drop down list of games
-        JPanel comboBoxPane = new JPanel(); //use FlowLayout
-        
-        List<Game> games = Query.getGames();
-        String comboBoxItems[] = new String[games.size()];
-        for (int i = 0; i < games.size(); i++) {
-        	comboBoxItems[i] = games.get(i).getTitle();
-        }
-        
-        JComboBox<String> cb = new JComboBox<String>(comboBoxItems);
-        cb.setEditable(false);
-        comboBoxPane.add(cb);
+//        JPanel comboBoxPane = new JPanel(); //use FlowLayout
+//        
+//        List<Game> games = Query.getGames();
+//        String comboBoxItems[] = new String[games.size()];
+//        for (int i = 0; i < games.size(); i++) {
+//        	comboBoxItems[i] = games.get(i).getTitle();
+//        }
+//        
+//        JComboBox<String> cb = new JComboBox<String>(comboBoxItems);
+//        cb.setEditable(false);
+//        comboBoxPane.add(cb);
+    	
+    	
+    	// setting up the drop down list of games
+        JPanel comboBoxPane = new JPanel(); //use FlowLayout 
+    	myCB.setEditable(false);
+    	comboBoxPane.add(myCB);
     	
         // constructing the button and text fields
         final JButton close = new JButton("Logout");
@@ -322,7 +360,7 @@ public class GUI extends JFrame {
         final JLabel gameTitle = new JLabel("Game Title");
 
         // burrito rating
-        BurritoScore bs = new BurritoScore((int) Math.round(Query.getGameAvgRating(Query.getGameByTitle((String) cb.getSelectedItem()))), false);
+        BurritoScore bs = new BurritoScore((int) Math.round(Query.getGameAvgRating(Query.getGameByTitle((String) myCB.getSelectedItem()))), false);
         
         final JLabel review = new JLabel("Reviews:");
         
@@ -356,14 +394,14 @@ public class GUI extends JFrame {
         class ComboBoxActionListener implements ActionListener {
         	@Override
         	public void actionPerformed(ActionEvent e) {
-        		String gameTitle = (String) cb.getSelectedItem();
+        		String gameTitle = (String) myCB.getSelectedItem();
 				final int burritos = (int) Math.round(Query.getGameAvgRating(Query.getGameByTitle(gameTitle)));
 		        bs.setScore(burritos);
 		        revalidate();
 		        repaint();
         	}
         }
-        cb.addActionListener(new ComboBoxActionListener());
+        myCB.addActionListener(new ComboBoxActionListener());
         
         /**
          *  This class logs the user out when the button is pressed.
@@ -407,6 +445,7 @@ public class GUI extends JFrame {
             	default:
             		break;
             	}
+            	RefreshComboBoxGames();
             	invalidate();
             	repaint();
             	pageManagement(ADMINPANEL);
@@ -421,7 +460,8 @@ public class GUI extends JFrame {
              * @param theButtonClick when the button action event takes place
              */
             public void actionPerformed(final ActionEvent theButtonClick) {
-            	Query.removeGame(Query.getGameByTitle((String) cb.getSelectedItem()));
+            	Query.removeGame(Query.getGameByTitle((String) myCB.getSelectedItem()));
+            	RefreshComboBoxGames();
             	invalidate();
             	repaint();
             	pageManagement(ADMINPANEL);
@@ -437,7 +477,7 @@ public class GUI extends JFrame {
              */
             public void actionPerformed(final ActionEvent theButtonClick) {
             	System.out.println("EditingGame!");
-            	EditGamePromptPanel p = new EditGamePromptPanel(Query.getGameByTitle((String) cb.getSelectedItem()));
+            	EditGamePromptPanel p = new EditGamePromptPanel(Query.getGameByTitle((String) myCB.getSelectedItem()));
             	
             	int button = JOptionPane.showConfirmDialog(null, p, "Edit Existing Game", JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
             	switch (button) {
@@ -446,6 +486,7 @@ public class GUI extends JFrame {
 					success &= Query.editGameYear(p.getGameId(), p.getYear());
 					success &= Query.editGameESRB(p.getGameId(), p.getEsrb());
 					success &= Query.editGameDeveloper(p.getGameId(), p.getDevs());
+					RefreshComboBoxGames();
                 	if (!success) {
                 		JOptionPane.showMessageDialog(null, "Failed to edit game due to improper inputs.");
                 	}

@@ -17,17 +17,20 @@ public class NewGamePromptPanel extends JPanel {
 	
 	private final JTextField title;
 	private final JTextField devs;
+	private final JTextField genre;
 	private final JTextField year;
 	private final JTextField esrb;
 	
 	public NewGamePromptPanel() {
 		JLabel t = new JLabel("Title");
     	JLabel d = new JLabel("Developer(s)");
+    	JLabel g = new JLabel("Genre");
     	JLabel y = new JLabel("Year Released");
     	JLabel e = new JLabel("ESRB");
 		
 		title = new JTextField(20);
     	devs = new JTextField(20);
+    	genre = new JTextField(20);
     	year = new JTextField(20);
     	esrb = new JTextField(20);
     	
@@ -37,6 +40,9 @@ public class NewGamePromptPanel extends JPanel {
     	JPanel dw = new JPanel();
     	dw.add(d);
     	dw.add(devs);
+    	JPanel gw = new JPanel();
+    	gw.add(g);
+    	gw.add(genre);
     	JPanel yw = new JPanel();
     	yw.add(y);
     	yw.add(year);
@@ -48,12 +54,13 @@ public class NewGamePromptPanel extends JPanel {
     	
     	add(tw);
     	add(dw);
+    	add(gw);
     	add(yw);
     	add(ew);
 	}
 	
 	public Game getGame() {
-		return new Game(title.getText(), devs.getText(), Integer.parseInt(year.getText()), esrb.getText());
+		return new Game(title.getText(), devs.getText(), genre.getText(), Integer.parseInt(year.getText()), esrb.getText());
 	}
 
 }

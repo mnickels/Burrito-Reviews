@@ -66,10 +66,11 @@ public class Game {
      * @throws IllegalArgumentException if title, developer or esrb are null or empty,
      * id < 1, year < 1958. 
      */
-    public Game(final String title, final String developer, final int year,
+    public Game(final String title, final String developer, final String genre, final int year,
             final String esrb) {
         setTitle(title);
         setDeveloper(developer);
+        setGenre(genre);
         setYear(year);
         setEsrb(esrb);
     }
