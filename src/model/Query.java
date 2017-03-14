@@ -625,7 +625,7 @@ public class Query {
             createConnection();
         }
         String query = "INSERT INTO "+db+".GameReview "
-                     + "(fk_reviewerId, fk_gameId, rating) "
+                     + "(fk_reviewerId, fk_gameId, reviewText) "
                      + "VALUES (?, ?, ?);";
         PreparedStatement pstmt = null;
         boolean successful = true;
