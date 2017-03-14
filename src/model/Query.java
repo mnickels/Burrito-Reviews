@@ -336,8 +336,9 @@ public class Query {
      * @param user the user that is rating
      * @param game the game that is being rated
      * @param rating the rating
+     * @return true if successful, otherwise false
      */
-    public static void rateGame(User user, Game game, int rating) {
+    public static boolean rateGame(User user, Game game, int rating) {
         if (conn == null) {
             createConnection();
         }
@@ -346,6 +347,7 @@ public class Query {
                    + "ON DUPLICATE KEY "
                    + "UPDATE rating = " + rating + ";";
         PreparedStatement pstmt = null;
+        boolean successful = true;
         try {
             pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, user.getUserId());
@@ -355,7 +357,9 @@ public class Query {
         } catch (SQLException e) {
             System.out.println(e);
             e.printStackTrace();
+            successful = false;
         } 
+        return successful;
     }
     
     /**
