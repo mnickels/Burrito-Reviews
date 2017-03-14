@@ -25,21 +25,21 @@ public class Query {
     private static String serverName = "cssgate.insttech.washington.edu"; //cssgate.insttech.washington.edu
     private static Connection conn;
     
-//    static {
-//    	Scanner s = null;
-//    	try {
-//			s = new Scanner(new File("dbinfo.txt"));
-//		} catch (FileNotFoundException e) {
-//			e.printStackTrace();
-//		}
-//    	if (s != null) {
-//    		db = s.nextLine();
-//    		userName = s.nextLine();
-//    		password = s.nextLine();
-//    		serverName = s.nextLine();
-//    		s.close();
-//    	}
-//    }
+    static {
+    	Scanner s = null;
+    	try {
+			s = new Scanner(new File("dbinfo.txt"));
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+    	if (s != null) {
+    		db = s.nextLine();
+    		userName = s.nextLine();
+    		password = s.nextLine();
+    		serverName = s.nextLine();
+    		s.close();
+    	}
+    }
     
     /**
      * Creates a sql connection to MySQL using the properties for
@@ -452,8 +452,43 @@ public class Query {
     }
     
     /**
+     * Gets a game by its title.
+     * 
+     * @param title title of game
+     * @return the game
+     */
+    public static Game getGameByTitle(String title) {
+        if (conn == null) {
+            createConnection();
+        }
+        Statement stmt = null;
+        String query = "SELECT * FROM "+db+".Game "
+                     + "WHERE title = \""+title+"\";";
+        Game game = null;
+        try {
+            stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            while (rs.next()) {
+                int id = rs.getInt("gameId");
+                String developer = rs.getString("developer");
+                int year = rs.getInt("year");
+                String esrb = rs.getString("esrb");
+                game = new Game(id, title, developer, year, esrb);
+            }
+            if (stmt != null) {
+                stmt.close();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return game;
+    }
+    
+    /**
+     * @deprecated replaced by {@link #getGameByTitle(String)}
      * @author Mike Nickels
      */
+    @Deprecated 
     public static Game getGameByName(String name) {
     	for (Game g : getGames()) {
     		if (g.getTitle().equalsIgnoreCase(name)) {
@@ -463,6 +498,37 @@ public class Query {
     	return null;
     }
     
+    /**
+     * Adds a review about a game.
+     * 
+     * @param game the game
+     * @param user the reviewer
+     * @param reviewText the review
+     * @return true if successful, otherwise false
+     */
+    public static boolean addGameReview(Game game, User user, String reviewText) {
+        if (conn == null) {
+            createConnection();
+        }
+        String query = "INSERT INTO "+db+".gameReview "
+                     + "(fk_reviewerId, fk_gameId, rating) "
+                     + "VALUES (?, ?, ?);";
+        PreparedStatement pstmt = null;
+        boolean successful = true;
+        try {
+            pstmt = conn.prepareStatement(query);
+            pstmt.setInt(1, user.getUserId());
+            pstmt.setInt(2, game.getGameId());
+            pstmt.setString(3, reviewText);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e);
+            e.printStackTrace();
+            successful = false;
+        }
+        return successful;
+    }
+       
     /**
      * Gets all reviews for the game by game.
      * 
