@@ -7,7 +7,6 @@ import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Image;
 import java.awt.Toolkit;
@@ -26,10 +25,14 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
 
 import model.Game;
 import model.Query;
@@ -50,6 +53,8 @@ public class GUI extends JFrame {
     /** This is the generated Serialization number. */
     private static final long serialVersionUID = -2055958502864278259L;
 
+    // yo yo mama
+    
     //Constants
     /** This is the default starting size. */
     private static final Dimension DRAWING_PANEL_PREFERRED_SIZE = new Dimension(600, 500);
@@ -60,6 +65,8 @@ public class GUI extends JFrame {
     final static String REVIEWERPANEL = "Reviewer Home Screen";
     final static String REGISTRATIONPANEL = "Registration Screen";
     final static String ADMINPANEL = "Admin Screen";
+    
+    public final static String APP_NAME = "Burrito Reviews";
     
     //Fields    
     /** This is the JFrame that will pop up when the program runs. */
@@ -155,7 +162,7 @@ public class GUI extends JFrame {
         final JButton open = new JButton("Login");
         final JButton save = new JButton("Register");
         final JLabel un = new JLabel("UserName");
-        final JLabel grt = new JLabel(Frame.APP_NAME);
+        final JLabel grt = new JLabel(APP_NAME);
 		grt.setForeground(new Color(72, 64, 188));
 		Font titleFont = new Font("Garamond", Font.BOLD, 72);
 		grt.setFont(titleFont);
@@ -287,8 +294,6 @@ public class GUI extends JFrame {
      */
     private void adminScreen() {
     	
-		final gameInfoPanel gameInfo;
-		
     	//Card creation 
     	JPanel northCard = new JPanel();
     	JPanel southCard = new JPanel();
@@ -309,8 +314,6 @@ public class GUI extends JFrame {
         JComboBox<String> cb = new JComboBox<String>(comboBoxItems);
         cb.setEditable(false);
         comboBoxPane.add(cb);
-		
-		gameInfo = new gameInfoPanel(Query.getGameByName((String) cb.getSelectedItem()));
     	
         // constructing the button and text fields
         final JButton close = new JButton("Logout");
@@ -321,16 +324,13 @@ public class GUI extends JFrame {
         // burrito rating
         BurritoScore bs = new BurritoScore((int) Math.round(Query.getGameAvgRating(Query.getGameByName((String) cb.getSelectedItem()))), false);
         
-		northCard.add(gameInfo);
-		
         final JLabel review = new JLabel("Reviews:");
-        
-        // reviews
-        final JPanel
         
         // padding
         final JLabel padding1 = new JLabel(" ");
         final JLabel padding2 = new JLabel(" ");
+        
+        final JButton delGame = new JButton("Delete");
         
         // needs some code to pull from database and display all reviews
         
@@ -340,6 +340,7 @@ public class GUI extends JFrame {
         northCard.add(bs);
         southCard.add(addGame);
         southCard.add(editGame);
+        southCard.add(delGame);
         southCard.add(close); 
         centerCard.add(review);
         eastCard.add(padding1);
@@ -358,7 +359,6 @@ public class GUI extends JFrame {
         		String gameTitle = (String) cb.getSelectedItem();
 				final int burritos = (int) Math.round(Query.getGameAvgRating(Query.getGameByName(gameTitle)));
 		        bs.setScore(burritos);
-				gameInfo.setInfo(Query.getGameByName(gameTitle));
 		        revalidate();
 		        repaint();
         	}
@@ -384,7 +384,7 @@ public class GUI extends JFrame {
         /**
          *  This class opens a new review text box when the button is pressed.
          */
-        class NewReviewButtonActionListener implements ActionListener {
+        class NewGameButtonActionListener implements ActionListener {
             
             /**
              * This method logs the user out.
@@ -407,12 +407,29 @@ public class GUI extends JFrame {
             	default:
             		break;
             	}
+            	invalidate();
+            	repaint();
             	pageManagement(ADMINPANEL);
             }
         }
-        addGame.addActionListener(new NewReviewButtonActionListener());
+        addGame.addActionListener(new NewGameButtonActionListener());
+        
+        class DeleteGameButtonActionListener implements ActionListener {
+            
+            /**
+             * This method logs the user out.
+             * @param theButtonClick when the button action event takes place
+             */
+            public void actionPerformed(final ActionEvent theButtonClick) {
+            	Query.removeGame(Query.getGameByName((String) cb.getSelectedItem()));
+            	invalidate();
+            	repaint();
+            	pageManagement(ADMINPANEL);
+            }
+        }
+        delGame.addActionListener(new DeleteGameButtonActionListener());
 		
-		class EditReviewButtonActionListener implements ActionListener {
+		class EditGameButtonActionListener implements ActionListener {
             
             /**
              * This method logs the user out.
@@ -420,15 +437,15 @@ public class GUI extends JFrame {
              */
             public void actionPerformed(final ActionEvent theButtonClick) {
             	System.out.println("EditingGame!");
-            	EditGamePromptPanel p = new EditGamePromptPanel();
+            	EditGamePromptPanel p = new EditGamePromptPanel(Query.getGameByName((String) cb.getSelectedItem()));
             	
             	int button = JOptionPane.showConfirmDialog(null, p, "Edit Existing Game", JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
             	switch (button) {
             	case JOptionPane.OK_OPTION:
-                	boolean success = Query.editGameTitle(p.getGameId());
-					success &= Query.editGameYear(p.getGameId());
-					success &= Query.editGameEsrb(p.getGameId());
-					success &= Query.editGameDeveloper(p.getGameId());
+                	boolean success = Query.editGameTitle(p.getGameId(), p.getTitle());
+					success &= Query.editGameYear(p.getGameId(), p.getYear());
+					success &= Query.editGameESRB(p.getGameId(), p.getEsrb());
+					success &= Query.editGameDeveloper(p.getGameId(), p.getDevs());
                 	if (!success) {
                 		JOptionPane.showMessageDialog(null, "Failed to edit game due to improper inputs.");
                 	}
@@ -441,7 +458,7 @@ public class GUI extends JFrame {
             	pageManagement(ADMINPANEL);
             }
         }
-        editGame.addActionListener(new EditReviewButtonActionListener());
+        editGame.addActionListener(new EditGameButtonActionListener());
         
         /**
          *  This class submits the review when the button is pressed.
@@ -466,8 +483,6 @@ public class GUI extends JFrame {
      */
     private void reviewerScreen() {
     	
-		final gameInfoPanel gameInfo;
-		
     	//Card creation 
     	JPanel northCard = new JPanel();
     	JPanel southCard = new JPanel();
@@ -488,8 +503,6 @@ public class GUI extends JFrame {
         
         cb.setEditable(false);
         comboBoxPane.add(cb);
-		
-		gameInfo = new gameInfoPanel(Query.getGameByName((String) cb.getSelectedItem()));
     	
         // constructing the button and text fields
         final JButton close = new JButton("Logout");
@@ -500,13 +513,16 @@ public class GUI extends JFrame {
         // burrito rating
         BurritoScore bs = new BurritoScore((int) Math.round(Query.getGameAvgRating(Query.getGameByName((String) cb.getSelectedItem()))), false);
         
-		northCard.add(gameInfo);
-		
         final JLabel review = new JLabel("New Review:");
         
         // padding
         final JLabel padding1 = new JLabel(" ");
         final JLabel padding2 = new JLabel(" ");
+        
+        // own review
+        final JLabel myReview = new JLabel("My Review:");
+        final JTextArea reviewbox = new JTextArea();
+        reviewbox.setEditable(false);
         
         // needs some code to pull from database and display all reviews
         
@@ -556,39 +572,65 @@ public class GUI extends JFrame {
         }
         close.addActionListener(new CloseButtonActionListener());
         
-        /**
-         *  This class opens a new review text box when the button is pressed.
-         */
         class NewReviewButtonActionListener implements ActionListener {
-            
+
             /**
              * This method logs the user out.
              * @param theButtonClick when the button action event takes place
              */
             public void actionPerformed(final ActionEvent theButtonClick) {
-            	System.out.println("NewReview!");
-            	// needs to open up a review text box
-            	pageManagement(REVIEWERPANEL);
+                System.out.println("NewReview!");
+                NewReviewPromptPanel p = new NewReviewPromptPanel();
+                String gameTitle = (String) cb.getSelectedItem();
+                int button = JOptionPane.showConfirmDialog(null, p, "Add New Review", JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
+                switch (button) {
+                case JOptionPane.OK_OPTION:
+                    boolean success = Query.addGameReview(Query.getGameByTitle(gameTitle), currentUser, p.getContent());
+                    if (!success) {
+                        JOptionPane.showMessageDialog(null, "Failed to add Review due to improper inputs.");
+                    }
+                    break;
+                case JOptionPane.CANCEL_OPTION:
+                    break;
+                default:
+                    break;
+                }
+                pageManagement(REVIEWERPANEL);
             }
         }
         newReview.addActionListener(new NewReviewButtonActionListener());
-        
-        /**
-         *  This class submits the review when the button is pressed.
-         */
-        class SubmitReviewButtonActionListener implements ActionListener {
+        //addGame.addActionListener(new NewReviewButtonActionListener());
+		
+		class EditReviewButtonActionListener implements ActionListener {
             
             /**
              * This method logs the user out.
              * @param theButtonClick when the button action event takes place
              */
             public void actionPerformed(final ActionEvent theButtonClick) {
-            	System.out.println("Submitted Review!");
-            	// needs to send the review to the database
-
+            	System.out.println("EditingGame!");
+            	EditGamePromptPanel p = new EditGamePromptPanel(Query.getGameByName(gameTitle.getText()));
+            	
+            	int button = JOptionPane.showConfirmDialog(null, p, "Edit Existing Game", JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
+            	switch (button) {
+            	case JOptionPane.OK_OPTION:
+                	boolean success = Query.editGameTitle(p.getGameId(), p.getTitle());
+					success &= Query.editGameYear(p.getGameId(), p.getYear());
+					success &= Query.editGameESRB(p.getGameId(), p.getEsrb());
+					success &= Query.editGameDeveloper(p.getGameId(), p.getDevs());
+                	if (!success) {
+                		JOptionPane.showMessageDialog(null, "Failed to edit game due to improper inputs.");
+                	}
+            		break;
+            	case JOptionPane.CANCEL_OPTION:
+            		break;
+            	default:
+            		break;
+            	}
+            	pageManagement(ADMINPANEL);
             }
         }
-        submitReview.addActionListener(new SubmitReviewButtonActionListener());
+        //editGame.addActionListener(new EditReviewButtonActionListener());
     }
     
     /**
@@ -596,8 +638,6 @@ public class GUI extends JFrame {
      */
     private void UserScreen() {
     	
-		final gameInfoPanel gameInfo;
-		
     	//Card creation 
     	JPanel northCard = new JPanel();
     	JPanel southCard = new JPanel();
@@ -606,17 +646,12 @@ public class GUI extends JFrame {
     	JPanel westCard = new JPanel();
     	centerCard.setLayout(new BoxLayout(centerCard, BoxLayout.Y_AXIS));
     	
+    	
+    	
     	// setting up the drop down list of games
         JPanel comboBoxPane = new JPanel(); //use FlowLayout
         
         List<Game> games = Query.getGames();
-        // sort
-        games.sort(new Comparator<Game>() {
-			@Override
-			public int compare(Game g0, Game g1) {
-				return g0.getTitle().compareTo(g1.getTitle());
-			}
-        });
         
         String comboBoxItems[] = new String[games.size()];
         // add to combobox
@@ -627,9 +662,21 @@ public class GUI extends JFrame {
         
         cb.setEditable(false);
         comboBoxPane.add(cb);
-		
-		gameInfo = new gameInfoPanel(Query.getGameByName((String) cb.getSelectedItem()));
     	
+        // setting up the scroll pane
+        JPanel jpAcc = new JPanel();
+        jpAcc.setLayout(new BorderLayout());
+        String labels[] = {"Test 1"};
+     
+        JList checkBoxesJList = new JList<String>(labels);
+
+        checkBoxesJList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        JScrollPane scrollPane = new JScrollPane(checkBoxesJList);
+        jpAcc.add(scrollPane);
+
+        getContentPane().add(jpAcc);
+        pack();
+        
         // constructing the button and text fields
         final JButton close = new JButton("Logout");
         final JLabel gameTitle = new JLabel("Game Title");
@@ -637,8 +684,6 @@ public class GUI extends JFrame {
         // burrito rating
         BurritoScore bs = new BurritoScore((int) Math.round(Query.getGameAvgRating(Query.getGameByName((String) cb.getSelectedItem()))), false);
         
-		northCard.add(gameInfo);
-		
         final JLabel review = new JLabel("Reviews:");
         
         // padding
@@ -654,6 +699,7 @@ public class GUI extends JFrame {
         northCard.add(bs);
         southCard.add(close);        
         centerCard.add(review);
+        centerCard.add(jpAcc);
         eastCard.add(padding1);
         westCard.add(padding2);
 

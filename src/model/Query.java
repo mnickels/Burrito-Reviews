@@ -19,10 +19,10 @@ import java.util.Scanner;
  */
 public class Query {
     
-    private static String db; //Change to yours
-    private static String userName;
-    private static String password;
-    private static String serverName; //cssgate.insttech.washington.edu
+    private static String db = "####"; //Change to yours
+    private static String userName = "####";
+    private static String password = "####";
+    private static String serverName = "cssgate.insttech.washington.edu"; //cssgate.insttech.washington.edu
     private static Connection conn;
     
     static {
@@ -133,7 +133,7 @@ public class Query {
         }
         Statement stmt = null;
         String query = "SELECT `name`, userType "
-                     + "FROM "+db+".User "
+                     + "FROM "+db+".`User` "
                      + "WHERE userId = " + id;
         User user = null;
         try {
@@ -309,16 +309,17 @@ public class Query {
             createConnection();
         }
         String query = "INSERT INTO "+db+".Game "
-                     + "(title, developer, `year`, esrb) "
-                     + "VALUES (?, ?, ?, ?);";
+                     + "(title, developer, genre, `year`, esrb) "
+                     + "VALUES (?, ?, ?, ?, ?);";
         PreparedStatement pstmt = null;
         boolean successful = true;
         try {
             pstmt = conn.prepareStatement(query);
             pstmt.setString(1, game.getTitle());
             pstmt.setString(2, game.getDeveloper());
-            pstmt.setInt(3, game.getYear());
-            pstmt.setString(4, game.getEsrb());
+            pstmt.setString(3, game.getGenre());
+            pstmt.setInt(4, game.getYear());
+            pstmt.setString(5, game.getEsrb());
             pstmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println(e);
@@ -399,9 +400,9 @@ public class Query {
             createConnection();
         }
         Statement stmt = null;
-        String query = "SELECT AVG(rating) AS average "
+        String query = "SELECT IFNULL((SELECT AVG(rating) "
                      + "FROM "+db+".UserRating "
-                     + "WHERE fk_gameId = " + game.getGameId() + ";";
+                     + "WHERE fk_gameId = " + game.getGameId() + "), 0) AS average;";
         double average = 0;
         try {
             stmt = conn.createStatement();
@@ -418,16 +419,20 @@ public class Query {
     }
     
     /**
-     * Gets all games from game table.
+     * Gets all games sorted by review count, ascending.
      * 
-     * @return list of games
+     * @return list of games sorted by review count, ascending
      */
-    public static List<Game> getGames() {
+    public static List<Game> getGamesByReviewCount() {
         if (conn == null) {
             createConnection();
         }
         Statement stmt = null;
-        String query = "SELECT * FROM "+db+".Game";
+        String query = "SELECT gameId, title, developer, genre, `year`, esrb "
+                     + "FROM "+db+".Game, "+db+".GameReview "
+                     + "WHERE gameID = fk_gameId "
+                     + "GROUP BY gameId "
+                     + "ORDER BY count(reviewText) ASC;";
         List<Game> games = new ArrayList<Game>();
         try {
             stmt = conn.createStatement();
@@ -436,9 +441,10 @@ public class Query {
                 int id = rs.getInt("gameId");
                 String title = rs.getString("title");
                 String developer = rs.getString("developer");
+                String genre = rs.getString("genre");
                 int year = rs.getInt("year");
                 String esrb = rs.getString("esrb");
-                Game game = new Game(id, title, developer, year, esrb);
+                Game game = new Game(id, title, developer, genre, year, esrb);
                 games.add(game);
             }
             if (stmt != null) {
@@ -451,8 +457,152 @@ public class Query {
     }
     
     /**
+     * Gets all games order by their average rating, ascending.
+     * 
+     * @return list of games in order by average rating, ascending.
+     */
+    public static List<Game> getGamesByAvgRating() {
+        if (conn == null) {
+            createConnection();
+        }
+        Statement stmt = null;
+        String query = "SELECT gameId, title, developer, genre, `year`, esrb "
+                     + "FROM "+db+".Game, "+db+".UserRating "
+                     + "WHERE gameID = fk_gameId "
+                     + "GROUP BY gameId "
+                     + "ORDER BY SUM(rating) ASC;";
+        List<Game> games = new ArrayList<Game>();
+        try {
+            stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            while (rs.next()) {
+                int id = rs.getInt("gameId");
+                String title = rs.getString("title");
+                String developer = rs.getString("developer");
+                String genre = rs.getString("genre");
+                int year = rs.getInt("year");
+                String esrb = rs.getString("esrb");
+                Game game = new Game(id, title, developer, genre, year, esrb);
+                games.add(game);
+            }
+            if (stmt != null) {
+                stmt.close();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return games;
+    }
+    
+    /**
+     * Gets all games order by genre.
+     * 
+     * @return list of games order by genre
+     */
+    public static List<Game> getGamesByGenre() {
+        if (conn == null) {
+            createConnection();
+        }
+        Statement stmt = null;
+        String query = "SELECT * FROM "+db+".Game "
+                     + "ORDER BY genre ASC;";
+        List<Game> games = new ArrayList<Game>();
+        try {
+            stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            while (rs.next()) {
+                int id = rs.getInt("gameId");
+                String title = rs.getString("title");
+                String developer = rs.getString("developer");
+                String genre = rs.getString("genre");
+                int year = rs.getInt("year");
+                String esrb = rs.getString("esrb");
+                Game game = new Game(id, title, developer, genre, year, esrb);
+                games.add(game);
+            }
+            if (stmt != null) {
+                stmt.close();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return games;
+    }
+    
+    /**
+     * Gets all games from game table.
+     * 
+     * @return list of games
+     */
+    public static List<Game> getGames() {
+        if (conn == null) {
+            createConnection();
+        }
+        Statement stmt = null;
+        String query = "SELECT * FROM "+db+".Game "
+                     + "ORDER BY title ASC;";
+        List<Game> games = new ArrayList<Game>();
+        try {
+            stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            while (rs.next()) {
+                int id = rs.getInt("gameId");
+                String title = rs.getString("title");
+                String developer = rs.getString("developer");
+                String genre = rs.getString("genre");
+                int year = rs.getInt("year");
+                String esrb = rs.getString("esrb");
+                Game game = new Game(id, title, developer, genre, year, esrb);
+                games.add(game);
+            }
+            if (stmt != null) {
+                stmt.close();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return games;
+    }
+    
+    /**
+     * Gets a game by its title.
+     * 
+     * @param title title of game
+     * @return the game
+     */
+    public static Game getGameByTitle(String title) {
+        if (conn == null) {
+            createConnection();
+        }
+        Statement stmt = null;
+        String query = "SELECT * FROM "+db+".Game "
+                     + "WHERE title = \""+title+"\";";
+        Game game = null;
+        try {
+            stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            while (rs.next()) {
+                int id = rs.getInt("gameId");
+                String developer = rs.getString("developer");
+                String genre = rs.getString("genre");
+                int year = rs.getInt("year");
+                String esrb = rs.getString("esrb");
+                game = new Game(id, title, developer, genre, year, esrb);
+            }
+            if (stmt != null) {
+                stmt.close();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return game;
+    }
+    
+    /**
+     * @deprecated replaced by {@link #getGameByTitle(String)}
      * @author Mike Nickels
      */
+    @Deprecated 
     public static Game getGameByName(String name) {
     	for (Game g : getGames()) {
     		if (g.getTitle().equalsIgnoreCase(name)) {
@@ -462,6 +612,37 @@ public class Query {
     	return null;
     }
     
+    /**
+     * Adds a review about a game.
+     * 
+     * @param game the game
+     * @param user the reviewer
+     * @param reviewText the review
+     * @return true if successful, otherwise false
+     */
+    public static boolean addGameReview(Game game, User user, String reviewText) {
+        if (conn == null) {
+            createConnection();
+        }
+        String query = "INSERT INTO "+db+".GameReview "
+                     + "(fk_reviewerId, fk_gameId, reviewText) "
+                     + "VALUES (?, ?, ?);";
+        PreparedStatement pstmt = null;
+        boolean successful = true;
+        try {
+            pstmt = conn.prepareStatement(query);
+            pstmt.setInt(1, user.getUserId());
+            pstmt.setInt(2, game.getGameId());
+            pstmt.setString(3, reviewText);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e);
+            e.printStackTrace();
+            successful = false;
+        }
+        return successful;
+    }
+       
     /**
      * Gets all reviews for the game by game.
      * 
@@ -485,7 +666,8 @@ public class Query {
         Statement stmt = null;
         String query = "SELECT reviewText "
                      + "FROM "+db+".GameReview , "+db+".Game "
-                     + "WHERE title = \"" + title + "\"";
+                     + "WHERE title = \"" + title + "\" "
+                     + "AND fk_gameId = gameId;";
         List<String> reviews = new ArrayList<String>();
         try {
             stmt = conn.createStatement();
@@ -517,8 +699,8 @@ public class Query {
         }
         String sql = "UPDATE "+db+".GameReview "
                 + "SET  reviewText = \""+reviewText+"\" "
-                + "WHERE gameId = "+game.getGameId()+" "
-                + "AND userId = "+user.getUserId()+";";
+                + "WHERE fk_gameId = "+game.getGameId()+" "
+                + "AND fk_userId = "+user.getUserId()+";";
         PreparedStatement pstmt = null;
         boolean successful = true;
         try {
@@ -530,6 +712,97 @@ public class Query {
             successful = false;
         }
         return successful;
+    }
+    
+    public static String getReview(Game game, User user) {
+    	if (conn == null) {
+            createConnection();
+        }
+        String sql = "SELECT reviwText FROM "+db+".GameReview "
+                + "WHERE fk_gameId = "+game.getGameId()+" "
+                + "AND fk_reviewerId = "+user.getUserId()+";";
+        PreparedStatement pstmt = null;
+        try {
+            pstmt = conn.prepareStatement(sql);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e);
+            e.printStackTrace();
+        }
+        return pstmt.toString();
+    }
+    
+    /**
+     * Removes a users rating for a game.
+     * 
+     * @param user the user
+     * @param game the game
+     * @return true if successful, otherwise false
+     */
+    public static boolean removeGameRating(User user, Game game) {
+        if (conn == null) {
+            createConnection();
+        }
+        String sql = "DELETE FROM "+db+".UserRating "
+                   + "WHERE fk_gameId = "+game.getGameId()+" "
+                   + "AND fk_userId = "+user.getUserId()+";";
+        PreparedStatement pstmt = null;
+        boolean successful = true;
+        try {
+            pstmt = conn.prepareStatement(sql);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e);
+            e.printStackTrace();
+            successful = false;
+        }
+        return successful;
+    }
+    
+    /**
+     * Remove a reviewers review.
+     * 
+     * @param user the reviewer
+     * @param game the game
+     * @return true if successful, otherwise false
+     */
+    public static boolean removeReview(User user, Game game) {
+        if (conn == null) {
+            createConnection();
+        }
+        String sql = "DELETE FROM "+db+".GameReview "
+                   + "WHERE fk_gameId = "+game.getGameId()+" "
+                   + "AND fk_reviewerId = "+user.getUserId()+";";
+        PreparedStatement pstmt = null;
+        boolean successful = true;
+        try {
+            pstmt = conn.prepareStatement(sql);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e);
+            e.printStackTrace();
+            successful = false;
+        }
+        return successful;
+    }
+    
+    public static boolean removeGame(Game game) {
+    	if (conn == null) {
+            createConnection();
+        }
+    	String sql = "DELETE FROM "+db+".Game "
+    			   + "WHERE gameId = "+game.getGameId()+";";
+    	PreparedStatement pstmt = null;
+    	boolean successful = true;
+    	try {
+    		pstmt = conn.prepareStatement(sql);
+    		pstmt.executeUpdate();
+    	} catch (SQLException e) {
+            System.out.println(e);
+            e.printStackTrace();
+            successful = false;
+        }
+    	return successful;
     }
     
     /**
@@ -572,6 +845,33 @@ public class Query {
         }
         String sql = "UPDATE "+db+".Game "
                 + "SET  developer = \""+developer+"\" "
+                + "WHERE gameId = "+gameId+";";
+        PreparedStatement pstmt = null;
+        boolean successful = true;
+        try {
+            pstmt = conn.prepareStatement(sql);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e);
+            e.printStackTrace();
+            successful = false;
+        }
+        return successful;
+    }
+    
+    /**
+     * Edits a games genre.
+     * 
+     * @param gameId the game
+     * @param genre the genre
+     * @return true if successful, otherwise false
+     */
+    public static boolean editGameGenre(int gameId, String genre) {
+        if (conn == null) {
+            createConnection();
+        }
+        String sql = "UPDATE "+db+".Game "
+                + "SET  genre = \""+genre+"\" "
                 + "WHERE gameId = "+gameId+";";
         PreparedStatement pstmt = null;
         boolean successful = true;

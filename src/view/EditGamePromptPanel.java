@@ -21,16 +21,20 @@ public class EditGamePromptPanel extends JPanel {
 	private final JTextField esrb;
 	private final int gameId;
 	
-	public NewGamePromptPanel(Game theGame) {
+	public EditGamePromptPanel(Game theGame) {
 		JLabel t = new JLabel("Title");
     	JLabel d = new JLabel("Developer(s)");
     	JLabel y = new JLabel("Year Released");
     	JLabel e = new JLabel("ESRB");
-		
-		title = title.setText(theGame.getTitle());
-    	devs = new JTextField(theGame.getDevs());
-    	year = new JTextField(theGame.getYear());
-    	esrb = new JTextField(theGame.getEsrb());
+
+    	title = new JTextField();
+		title.setText(theGame.getTitle());
+    	devs = new JTextField();
+    	devs.setText(theGame.getDeveloper());
+    	year = new JTextField();
+    	year.setText(String.format("%d", theGame.getYear()));
+    	esrb = new JTextField();
+    	esrb.setText(theGame.getEsrb());
 		gameId = theGame.getGameId();
     	
     	JPanel tw = new JPanel();
@@ -54,23 +58,23 @@ public class EditGamePromptPanel extends JPanel {
     	add(ew);
 	}
 	
-	public JTextField getTitle(){
-		return title;
+	public String getTitle(){
+		return title.getText();
 	}
 	
-	public JTextField getDevs(){
-		return devs;
+	public String getDevs(){
+		return devs.getText();
 	}
 	
-	public JTextField getYear(){
-		return year;
+	public int getYear(){
+		return Integer.parseInt(year.getText());
 	}
 	
-	public JTextField getEsrb(){
-		return esrb;
+	public String getEsrb(){
+		return esrb.getText();
 	}
 	
-	public JTextField getGameId(){
+	public int getGameId(){
 		return gameId;
 	}
 	

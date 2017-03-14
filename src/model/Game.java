@@ -10,6 +10,7 @@ public class Game {
     private int gameId;
     private String title;
     private String developer;
+    private String genre;
     private int year;
     private String esrb;
     
@@ -34,6 +35,28 @@ public class Game {
     }
     
     /**
+     * Initialize a game with id, title, developer, genre, year and esrb.
+     * 
+     * @param id game id
+     * @param title game title
+     * @param developer developer name
+     * @param genre game genre
+     * @param year release year
+     * @param esrb age rating
+     * @throws IllegalArgumentException if title, developer, genre or esrb are null or empty,
+     * id < 1, year < 1958.
+     */
+    public Game(final int id, final String title, final String developer, final String genre,
+            final int year, final String esrb) {
+        setGameId(id);
+        setTitle(title);
+        setGenre(genre);
+        setDeveloper(developer);
+        setYear(year);
+        setEsrb(esrb);
+    }
+
+ /**
      * Create new game.
      * 
      * @param title game title
@@ -57,6 +80,17 @@ public class Game {
                 + developer + ", year="
                 + year + ", esrb=" + esrb + "]";
     }
+    
+   private void setGenre(String genre) {
+       if (genre == null || genre.length() == 0) {
+           throw new IllegalArgumentException("Please enter a valid genre");
+       }
+       this.genre = genre;
+    }
+   
+   public String getGenre() {
+       return genre;
+   }
 
     private void setEsrb(String esrb) {
         if (esrb == null || esrb.length() == 0) {
