@@ -14,6 +14,8 @@ import java.util.Scanner;
 
 /**
  * Queries to the database.
+ * This should really have been split into seperate classes.
+ * But it's too late for that.
  * 
  * @author Brian Jorgenson
  */
@@ -81,8 +83,9 @@ public class Query {
         try {
             stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(query);
-            rs.next();
-            valid = rs.getBoolean("valid");
+            if(rs.next()) {
+                valid = rs.getBoolean("valid");
+            }
             if (stmt != null) {
                 stmt.close();
             }
@@ -139,10 +142,11 @@ public class Query {
         try {
             stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(query);
-            rs.next();
-            String name = rs.getString("name");
-            UserType type = UserType.valueOf(rs.getString("userType"));
-            user = new User(id, name, type);
+            if(rs.next()) {
+                String name = rs.getString("name");
+                UserType type = UserType.valueOf(rs.getString("userType"));
+                user = new User(id, name, type);
+            }
             if (stmt != null) {
                 stmt.close();
             }
@@ -172,10 +176,11 @@ public class Query {
         try {
             stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(query);
-            rs.next();
-            int id = rs.getInt("userId");
-            UserType type = UserType.valueOf(rs.getString("userType"));
-            user = new User(id, name, type);
+            if(rs.next()) {
+                int id = rs.getInt("userId");
+                UserType type = UserType.valueOf(rs.getString("userType"));
+                user = new User(id, name, type);
+            }
             if (stmt != null) {
                 stmt.close();
             }
@@ -382,8 +387,9 @@ public class Query {
         try {
             stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(query);
-            rs.next();
-            rating = rs.getInt("rating");
+            if(rs.next()) {
+                rating = rs.getInt("rating");
+            }
             if (stmt != null) {
                 stmt.close();
             }
@@ -411,8 +417,9 @@ public class Query {
         try {
             stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(query);
-            rs.next();
-            average = rs.getDouble("average");
+            if(rs.next()) {
+                average = rs.getDouble("average");
+            }
             if (stmt != null) {
                 stmt.close();
             }
@@ -738,8 +745,9 @@ public class Query {
         try {
             stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(query);
-            rs.next();
-            review = rs.getString("reviewText");
+            if(rs.next()) {
+                review = rs.getString("reviewText");
+            }
             if (stmt != null) {
                 stmt.close();
             }
