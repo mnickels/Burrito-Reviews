@@ -643,7 +643,9 @@ public class Query {
         }
         String query = "INSERT INTO "+db+".GameReview "
                      + "(fk_reviewerId, fk_gameId, reviewText) "
-                     + "VALUES (?, ?, ?);";
+                     + "VALUES (?, ?, ?);"
+                     + "ON DUPLICATE KEY "
+                     + "UPDATE reviewText = \""+reviewText+"\";";
         PreparedStatement pstmt = null;
         boolean successful = true;
         try {
