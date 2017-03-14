@@ -402,7 +402,7 @@ public class Query {
         Statement stmt = null;
         String query = "SELECT IFNULL(SELECT AVG(rating) AS average "
                      + "FROM "+db+".UserRating "
-                     + "WHERE fk_gameId = " + game.getGameId() + "), 0;";
+                     + "WHERE fk_gameId = " + game.getGameId() + "), 0);";
         double average = 0;
         try {
             stmt = conn.createStatement();
