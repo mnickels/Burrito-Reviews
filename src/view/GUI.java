@@ -322,7 +322,7 @@ public class GUI extends JFrame {
         final JLabel gameTitle = new JLabel("Game Title");
 
         // burrito rating
-        BurritoScore bs = new BurritoScore((int) Math.round(Query.getGameAvgRating(Query.getGameByName((String) cb.getSelectedItem()))), false);
+        BurritoScore bs = new BurritoScore((int) Math.round(Query.getGameAvgRating(Query.getGameByTitle((String) cb.getSelectedItem()))), false);
         
         final JLabel review = new JLabel("Reviews:");
         
@@ -357,7 +357,7 @@ public class GUI extends JFrame {
         	@Override
         	public void actionPerformed(ActionEvent e) {
         		String gameTitle = (String) cb.getSelectedItem();
-				final int burritos = (int) Math.round(Query.getGameAvgRating(Query.getGameByName(gameTitle)));
+				final int burritos = (int) Math.round(Query.getGameAvgRating(Query.getGameByTitle(gameTitle)));
 		        bs.setScore(burritos);
 		        revalidate();
 		        repaint();
@@ -421,7 +421,7 @@ public class GUI extends JFrame {
              * @param theButtonClick when the button action event takes place
              */
             public void actionPerformed(final ActionEvent theButtonClick) {
-            	Query.removeGame(Query.getGameByName((String) cb.getSelectedItem()));
+            	Query.removeGame(Query.getGameByTitle((String) cb.getSelectedItem()));
             	invalidate();
             	repaint();
             	pageManagement(ADMINPANEL);
@@ -437,7 +437,7 @@ public class GUI extends JFrame {
              */
             public void actionPerformed(final ActionEvent theButtonClick) {
             	System.out.println("EditingGame!");
-            	EditGamePromptPanel p = new EditGamePromptPanel(Query.getGameByName((String) cb.getSelectedItem()));
+            	EditGamePromptPanel p = new EditGamePromptPanel(Query.getGameByTitle((String) cb.getSelectedItem()));
             	
             	int button = JOptionPane.showConfirmDialog(null, p, "Edit Existing Game", JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
             	switch (button) {
@@ -507,11 +507,12 @@ public class GUI extends JFrame {
         // constructing the button and text fields
         final JButton close = new JButton("Logout");
         final JButton newReview = new JButton("New Review");
-        final JButton submitReview = new JButton("Submit Review");
+        final JButton editReview = new JButton("Edit Review");
+        final JButton deleteReview = new JButton("Delete Review");
         final JLabel gameTitle = new JLabel("Game Title");
 
         // burrito rating
-        BurritoScore bs = new BurritoScore((int) Math.round(Query.getGameAvgRating(Query.getGameByName((String) cb.getSelectedItem()))), false);
+        BurritoScore bs = new BurritoScore((int) Math.round(Query.getGameAvgRating(Query.getGameByTitle((String) cb.getSelectedItem()))), false);
         
         final JLabel review = new JLabel("New Review:");
         
@@ -531,7 +532,8 @@ public class GUI extends JFrame {
         northCard.add(comboBoxPane);
         northCard.add(bs);
         southCard.add(newReview);
-        southCard.add(submitReview);
+        southCard.add(editReview);
+        southCard.add(deleteReview);
         southCard.add(close); 
         centerCard.add(review);
         eastCard.add(padding1);
@@ -548,7 +550,7 @@ public class GUI extends JFrame {
         	@Override
         	public void actionPerformed(ActionEvent e) {
         		String gameTitle = (String) cb.getSelectedItem();
-				final int burritos = (int) Math.round(Query.getGameAvgRating(Query.getGameByName(gameTitle)));
+				final int burritos = (int) Math.round(Query.getGameAvgRating(Query.getGameByTitle(gameTitle)));
 		        bs.setScore(burritos);
 		        revalidate();
 		        repaint();
@@ -599,7 +601,6 @@ public class GUI extends JFrame {
             }
         }
         newReview.addActionListener(new NewReviewButtonActionListener());
-        //addGame.addActionListener(new NewReviewButtonActionListener());
 		
 		class EditReviewButtonActionListener implements ActionListener {
             
@@ -608,16 +609,16 @@ public class GUI extends JFrame {
              * @param theButtonClick when the button action event takes place
              */
             public void actionPerformed(final ActionEvent theButtonClick) {
-            	System.out.println("EditingGame!");
-            	EditGamePromptPanel p = new EditGamePromptPanel(Query.getGameByName(gameTitle.getText()));
+            	System.out.println("EditingReview!");
+            	String gameTitle = (String) cb.getSelectedItem();
+            	Game theGame = Query.getGameByTitle(gameTitle);
+            	String oldReview = Query.getReview(theGame, currentUser);
+            	EditReviewPromptPanel p = new EditReviewPromptPanel(oldReview);
             	
-            	int button = JOptionPane.showConfirmDialog(null, p, "Edit Existing Game", JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
+            	int button = JOptionPane.showConfirmDialog(null, p, "Edit Existing Review", JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
             	switch (button) {
             	case JOptionPane.OK_OPTION:
-                	boolean success = Query.editGameTitle(p.getGameId(), p.getTitle());
-					success &= Query.editGameYear(p.getGameId(), p.getYear());
-					success &= Query.editGameESRB(p.getGameId(), p.getEsrb());
-					success &= Query.editGameDeveloper(p.getGameId(), p.getDevs());
+                	boolean success = Query.editReview(theGame, currentUser, p.getContent());
                 	if (!success) {
                 		JOptionPane.showMessageDialog(null, "Failed to edit game due to improper inputs.");
                 	}
@@ -627,10 +628,38 @@ public class GUI extends JFrame {
             	default:
             		break;
             	}
-            	pageManagement(ADMINPANEL);
+            	pageManagement(REVIEWERPANEL);
             }
         }
-        //editGame.addActionListener(new EditReviewButtonActionListener());
+        editReview.addActionListener(new EditReviewButtonActionListener());
+        
+        class DeleteReviewButtonActionListener implements ActionListener {
+
+            /**
+             * This method logs the user out.
+             * @param theButtonClick when the button action event takes place
+             */
+            public void actionPerformed(final ActionEvent theButtonClick) {
+                System.out.println("DeleteReview!");
+                DeleteReviewPromptPanel p = new DeleteReviewPromptPanel();
+                String gameTitle = (String) cb.getSelectedItem();
+                int button = JOptionPane.showConfirmDialog(null, p, "Delete Old Review", JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
+                switch (button) {
+                case JOptionPane.OK_OPTION:
+                    boolean success = Query.removeReview(currentUser, Query.getGameByTitle(gameTitle));
+                    if (!success) {
+                        JOptionPane.showMessageDialog(null, "Failed to delete Review due to improper inputs.");
+                    }
+                    break;
+                case JOptionPane.CANCEL_OPTION:
+                    break;
+                default:
+                    break;
+                }
+                pageManagement(REVIEWERPANEL);
+            }
+        }
+        deleteReview.addActionListener(new DeleteReviewButtonActionListener());
     }
     
     /**
@@ -678,11 +707,13 @@ public class GUI extends JFrame {
         pack();
         
         // constructing the button and text fields
+        final JButton rate = new JButton("Rate This Game");
+        final JButton delete = new JButton("Delete Your Rating");
         final JButton close = new JButton("Logout");
         final JLabel gameTitle = new JLabel("Game Title");
 
         // burrito rating
-        BurritoScore bs = new BurritoScore((int) Math.round(Query.getGameAvgRating(Query.getGameByName((String) cb.getSelectedItem()))), false);
+        BurritoScore bs = new BurritoScore((int) Math.round(Query.getGameAvgRating(Query.getGameByTitle((String) cb.getSelectedItem()))), false);
         
         final JLabel review = new JLabel("Reviews:");
         
@@ -697,6 +728,8 @@ public class GUI extends JFrame {
         northCard.add(comboBoxPane);
 //        northCard.add(gameScore);
         northCard.add(bs);
+        southCard.add(rate);
+        southCard.add(delete);
         southCard.add(close);        
         centerCard.add(review);
         centerCard.add(jpAcc);
@@ -714,7 +747,7 @@ public class GUI extends JFrame {
         	@Override
         	public void actionPerformed(ActionEvent e) {
         		String gameTitle = (String) cb.getSelectedItem();
-				final int burritos = (int) Math.round(Query.getGameAvgRating(Query.getGameByName(gameTitle)));
+				final int burritos = (int) Math.round(Query.getGameAvgRating(Query.getGameByTitle(gameTitle)));
 		        bs.setScore(burritos);
 		        revalidate();
 		        repaint();
@@ -737,6 +770,63 @@ public class GUI extends JFrame {
             }
         }
         close.addActionListener(new CloseButtonActionListener());
+        
+        /**
+         * This class opens a dialog to rate the game.
+         * @author Zachary
+         *
+         */
+        class RateGameButtonActionListener implements ActionListener {
+
+            /**
+             * This method logs the user out.
+             * @param theButtonClick when the button action event takes place
+             */
+            public void actionPerformed(final ActionEvent theButtonClick) {
+                System.out.println("RateGame!");
+                RateGamePromptPanel p = new RateGamePromptPanel();
+                String gameTitle = (String) cb.getSelectedItem();
+                int button = JOptionPane.showConfirmDialog(null, p, "Rate Game", JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
+                switch (button) {
+                case JOptionPane.OK_OPTION:
+                    boolean success = Query.rateGame(currentUser, Query.getGameByTitle(gameTitle), p.getRating());
+                    if (!success) {
+                        JOptionPane.showMessageDialog(null, "Failed to Rate Game due to improper inputs.");
+                    }
+                    break;
+                case JOptionPane.CANCEL_OPTION:
+                    break;
+                default:
+                    break;
+                }
+                pageManagement(HOMEPANEL);
+            }
+        }
+        rate.addActionListener(new RateGameButtonActionListener());
+        
+        /**
+         * This class opens a dialog to rate the game.
+         * @author Zachary
+         *
+         */
+        class DeleteRatingButtonActionListener implements ActionListener {
+
+            /**
+             * This method logs the user out.
+             * @param theButtonClick when the button action event takes place
+             */
+            public void actionPerformed(final ActionEvent theButtonClick) {
+                System.out.println("DeleteRating!");
+                
+                String gameTitle = (String) cb.getSelectedItem();
+
+                    boolean success = Query.removeGameRating(currentUser, Query.getGameByTitle(gameTitle));
+                    if (!success) {
+                        JOptionPane.showMessageDialog(null, "Failed to Delete Rating due to improper inputs.");
+                    }
+            }
+        }
+        delete.addActionListener(new DeleteRatingButtonActionListener());
     }
     
     /**
