@@ -418,6 +418,41 @@ public class Query {
     }
     
     /**
+     * Gets all games order by genre.
+     * 
+     * @return list of games order by genre
+     */
+    public static List<Game> getGamesByGenre() {
+        if (conn == null) {
+            createConnection();
+        }
+        Statement stmt = null;
+        String query = "SELECT * FROM "+db+".Game "
+                     + "ORDER BY genre ASC;";
+        List<Game> games = new ArrayList<Game>();
+        try {
+            stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            while (rs.next()) {
+                int id = rs.getInt("gameId");
+                String title = rs.getString("title");
+                String developer = rs.getString("developer");
+                String genre = rs.getString("genre");
+                int year = rs.getInt("year");
+                String esrb = rs.getString("esrb");
+                Game game = new Game(id, title, developer, genre, year, esrb);
+                games.add(game);
+            }
+            if (stmt != null) {
+                stmt.close();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return games;
+    }
+    
+    /**
      * Gets all games from game table.
      * 
      * @return list of games
