@@ -425,7 +425,7 @@ public class Query {
      */
     public static List<Game> getGamesByAvgRating() {
         Statement stmt = null;
-        String query = "SELECT gameId, title, developer, genre, `year`, ersb, SUM(rating) AS \"sum\" "
+        String query = "SELECT gameId, title, developer, genre, `year`, esrb, SUM(rating) AS \"sum\" "
                      + "FROM "+db+".Game, "+db+".UserRating "
                      + "WHERE gameID = fk_gameId "
                      + "GROUP BY gameId "
