@@ -462,6 +462,9 @@ public class Query {
      * @return list of games in order by average rating, ascending.
      */
     public static List<Game> getGamesByAvgRating() {
+        if (conn == null) {
+            createConnection();
+        }
         Statement stmt = null;
         String query = "SELECT gameId, title, developer, genre, `year`, esrb "
                      + "FROM "+db+".Game, "+db+".UserRating "
