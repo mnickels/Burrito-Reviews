@@ -617,6 +617,33 @@ public class Query {
         return pstmt.toString();
     }
     
+    /**
+     * Remove a reviewers review.
+     * 
+     * @param user the reviewer
+     * @param game the game
+     * @return true if successful, otherwise false
+     */
+    public static boolean removeReview(User user, Game game) {
+        if (conn == null) {
+            createConnection();
+        }
+        String sql = "DELETE FROM "+db+".GameReview "
+                   + "WHERE fk_gameId = "+game.getGameId()+" "
+                   + "AND fk_reviewerId = "+user.getUserId()+";";
+        PreparedStatement pstmt = null;
+        boolean successful = true;
+        try {
+            pstmt = conn.prepareStatement(sql);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e);
+            e.printStackTrace();
+            successful = false;
+        }
+        return successful;
+    }
+    
     public static boolean removeGame(Game game) {
     	if (conn == null) {
             createConnection();
