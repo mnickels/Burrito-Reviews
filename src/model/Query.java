@@ -624,7 +624,7 @@ public class Query {
         if (conn == null) {
             createConnection();
         }
-        String query = "INSERT INTO "+db+".gameReview "
+        String query = "INSERT INTO "+db+".GameReview "
                      + "(fk_reviewerId, fk_gameId, rating) "
                      + "VALUES (?, ?, ?);";
         PreparedStatement pstmt = null;
