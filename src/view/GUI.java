@@ -292,6 +292,8 @@ public class GUI extends JFrame {
      */
     private void adminScreen() {
     	
+		final gameInfoPanel gameInfo;
+		
     	//Card creation 
     	JPanel northCard = new JPanel();
     	JPanel southCard = new JPanel();
@@ -312,6 +314,8 @@ public class GUI extends JFrame {
         JComboBox<String> cb = new JComboBox<String>(comboBoxItems);
         cb.setEditable(false);
         comboBoxPane.add(cb);
+		
+		gameInfo = new gameInfoPanel(Query.getGameByName((String) cb.getSelectedItem()));
     	
         // constructing the button and text fields
         final JButton close = new JButton("Logout");
@@ -322,6 +326,8 @@ public class GUI extends JFrame {
         // burrito rating
         BurritoScore bs = new BurritoScore((int) Math.round(Query.getGameAvgRating(Query.getGameByName((String) cb.getSelectedItem()))), false);
         
+		northCard.add(gameInfo);
+		
         final JLabel review = new JLabel("Reviews:");
         
         // padding
@@ -357,6 +363,7 @@ public class GUI extends JFrame {
         		String gameTitle = (String) cb.getSelectedItem();
 				final int burritos = (int) Math.round(Query.getGameAvgRating(Query.getGameByName(gameTitle)));
 		        bs.setScore(burritos);
+				gameInfo.setInfo(Query.getGameByName(gameTitle));
 		        revalidate();
 		        repaint();
         	}
@@ -481,6 +488,8 @@ public class GUI extends JFrame {
      */
     private void reviewerScreen() {
     	
+		final gameInfoPanel gameInfo;
+		
     	//Card creation 
     	JPanel northCard = new JPanel();
     	JPanel southCard = new JPanel();
@@ -501,6 +510,8 @@ public class GUI extends JFrame {
         
         cb.setEditable(false);
         comboBoxPane.add(cb);
+		
+		gameInfo = new gameInfoPanel(Query.getGameByName((String) cb.getSelectedItem()));
     	
         // constructing the button and text fields
         final JButton close = new JButton("Logout");
@@ -511,6 +522,8 @@ public class GUI extends JFrame {
         // burrito rating
         BurritoScore bs = new BurritoScore((int) Math.round(Query.getGameAvgRating(Query.getGameByName((String) cb.getSelectedItem()))), false);
         
+		northCard.add(gameInfo);
+		
         final JLabel review = new JLabel("New Review:");
         
         // padding
@@ -635,6 +648,8 @@ public class GUI extends JFrame {
      */
     private void UserScreen() {
     	
+		final gameInfoPanel gameInfo;
+		
     	//Card creation 
     	JPanel northCard = new JPanel();
     	JPanel southCard = new JPanel();
@@ -659,6 +674,8 @@ public class GUI extends JFrame {
         
         cb.setEditable(false);
         comboBoxPane.add(cb);
+		
+		gameInfo = new gameInfoPanel(Query.getGameByName((String) cb.getSelectedItem()));
     	
         // setting up the scroll pane
         JPanel jpAcc = new JPanel();
@@ -681,6 +698,8 @@ public class GUI extends JFrame {
         // burrito rating
         BurritoScore bs = new BurritoScore((int) Math.round(Query.getGameAvgRating(Query.getGameByName((String) cb.getSelectedItem()))), false);
         
+		northCard.add(gameInfo);
+		
         final JLabel review = new JLabel("Reviews:");
         
         // padding
