@@ -116,6 +116,7 @@ public class Query {
             pstmt.setString(2, user.getPassword());
             pstmt.setString(3, user.getType().toString());
             pstmt.executeUpdate();
+            pstmt.close();
         } catch (SQLException e) {
             System.out.println(e);
             e.printStackTrace();
@@ -241,6 +242,7 @@ public class Query {
         try {
             pstmt = conn.prepareStatement(sql);
             pstmt.executeUpdate();
+            pstmt.close();
         } catch (SQLException e) {
             System.out.println(e);
             e.printStackTrace();
@@ -268,6 +270,7 @@ public class Query {
         try {
             pstmt = conn.prepareStatement(sql);
             pstmt.executeUpdate();
+            pstmt.close();
         } catch (SQLException e) {
             System.out.println(e);
             e.printStackTrace();
@@ -295,6 +298,7 @@ public class Query {
         try {
             pstmt = conn.prepareStatement(sql);
             pstmt.executeUpdate();
+            pstmt.close();
         } catch (SQLException e) {
             System.out.println(e);
             e.printStackTrace();
@@ -326,6 +330,7 @@ public class Query {
             pstmt.setInt(4, game.getYear());
             pstmt.setString(5, game.getEsrb());
             pstmt.executeUpdate();
+            pstmt.close();
         } catch (SQLException e) {
             System.out.println(e);
             e.printStackTrace();
@@ -359,6 +364,7 @@ public class Query {
             pstmt.setInt(2, game.getGameId());
             pstmt.setInt(3, rating);
             pstmt.executeUpdate();
+            pstmt.close();
         } catch (SQLException e) {
             System.out.println(e);
             e.printStackTrace();
@@ -646,6 +652,7 @@ public class Query {
             pstmt.setInt(2, game.getGameId());
             pstmt.setString(3, reviewText);
             pstmt.executeUpdate();
+            pstmt.close();
         } catch (SQLException e) {
             System.out.println(e);
             e.printStackTrace();
@@ -717,6 +724,7 @@ public class Query {
         try {
             pstmt = conn.prepareStatement(sql);
             pstmt.executeUpdate();
+            pstmt.close();
         } catch (SQLException e) {
             System.out.println(e);
             e.printStackTrace();
@@ -776,6 +784,7 @@ public class Query {
         try {
             pstmt = conn.prepareStatement(sql);
             pstmt.executeUpdate();
+            pstmt.close();
         } catch (SQLException e) {
             System.out.println(e);
             e.printStackTrace();
@@ -803,6 +812,7 @@ public class Query {
         try {
             pstmt = conn.prepareStatement(sql);
             pstmt.executeUpdate();
+            pstmt.close();
         } catch (SQLException e) {
             System.out.println(e);
             e.printStackTrace();
@@ -822,6 +832,7 @@ public class Query {
     	try {
     		pstmt = conn.prepareStatement(sql);
     		pstmt.executeUpdate();
+            pstmt.close();
     	} catch (SQLException e) {
             System.out.println(e);
             e.printStackTrace();
@@ -849,6 +860,7 @@ public class Query {
         try {
             pstmt = conn.prepareStatement(sql);
             pstmt.executeUpdate();
+            pstmt.close();
         } catch (SQLException e) {
             System.out.println(e);
             e.printStackTrace();
@@ -876,6 +888,7 @@ public class Query {
         try {
             pstmt = conn.prepareStatement(sql);
             pstmt.executeUpdate();
+            pstmt.close();
         } catch (SQLException e) {
             System.out.println(e);
             e.printStackTrace();
@@ -903,6 +916,7 @@ public class Query {
         try {
             pstmt = conn.prepareStatement(sql);
             pstmt.executeUpdate();
+            pstmt.close();
         } catch (SQLException e) {
             System.out.println(e);
             e.printStackTrace();
@@ -930,6 +944,7 @@ public class Query {
         try {
             pstmt = conn.prepareStatement(sql);
             pstmt.executeUpdate();
+            pstmt.close();
         } catch (SQLException e) {
             System.out.println(e);
             e.printStackTrace();
@@ -957,6 +972,7 @@ public class Query {
         try {
             pstmt = conn.prepareStatement(sql);
             pstmt.executeUpdate();
+            pstmt.close();
         } catch (SQLException e) {
             System.out.println(e);
             e.printStackTrace();
