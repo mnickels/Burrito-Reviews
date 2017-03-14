@@ -400,9 +400,9 @@ public class Query {
             createConnection();
         }
         Statement stmt = null;
-        String query = "SELECT AVG(rating) AS average "
+        String query = "SELECT IFNULL(SELECT AVG(rating) AS average "
                      + "FROM "+db+".UserRating "
-                     + "WHERE fk_gameId = " + game.getGameId() + ";";
+                     + "WHERE fk_gameId = " + game.getGameId() + "), 0;";
         double average = 0;
         try {
             stmt = conn.createStatement();
