@@ -309,16 +309,17 @@ public class Query {
             createConnection();
         }
         String query = "INSERT INTO "+db+".Game "
-                     + "(title, developer, `year`, esrb) "
-                     + "VALUES (?, ?, ?, ?);";
+                     + "(title, developer, genre, `year`, esrb) "
+                     + "VALUES (?, ?, ?, ?, ?);";
         PreparedStatement pstmt = null;
         boolean successful = true;
         try {
             pstmt = conn.prepareStatement(query);
             pstmt.setString(1, game.getTitle());
             pstmt.setString(2, game.getDeveloper());
-            pstmt.setInt(3, game.getYear());
-            pstmt.setString(4, game.getEsrb());
+            pstmt.setString(3, game.getGenre());
+            pstmt.setInt(4, game.getYear());
+            pstmt.setString(5, game.getEsrb());
             pstmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println(e);
@@ -472,9 +473,10 @@ public class Query {
                 int id = rs.getInt("gameId");
                 String title = rs.getString("title");
                 String developer = rs.getString("developer");
+                String genre = rs.getString("genre");
                 int year = rs.getInt("year");
                 String esrb = rs.getString("esrb");
-                Game game = new Game(id, title, developer, year, esrb);
+                Game game = new Game(id, title, developer, genre, year, esrb);
                 games.add(game);
             }
             if (stmt != null) {
@@ -506,9 +508,10 @@ public class Query {
             while (rs.next()) {
                 int id = rs.getInt("gameId");
                 String developer = rs.getString("developer");
+                String genre = rs.getString("genre");
                 int year = rs.getInt("year");
                 String esrb = rs.getString("esrb");
-                game = new Game(id, title, developer, year, esrb);
+                game = new Game(id, title, developer, genre, year, esrb);
             }
             if (stmt != null) {
                 stmt.close();
@@ -765,6 +768,33 @@ public class Query {
         }
         String sql = "UPDATE "+db+".Game "
                 + "SET  developer = \""+developer+"\" "
+                + "WHERE gameId = "+gameId+";";
+        PreparedStatement pstmt = null;
+        boolean successful = true;
+        try {
+            pstmt = conn.prepareStatement(sql);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e);
+            e.printStackTrace();
+            successful = false;
+        }
+        return successful;
+    }
+    
+    /**
+     * Edits a games genre.
+     * 
+     * @param gameId the game
+     * @param genre the genre
+     * @return true if successful, otherwise false
+     */
+    public static boolean editGameGenre(int gameId, String genre) {
+        if (conn == null) {
+            createConnection();
+        }
+        String sql = "UPDATE "+db+".Game "
+                + "SET  genre = \""+genre+"\" "
                 + "WHERE gameId = "+gameId+";";
         PreparedStatement pstmt = null;
         boolean successful = true;
