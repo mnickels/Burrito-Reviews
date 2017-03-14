@@ -700,7 +700,7 @@ public class Query {
         String sql = "UPDATE "+db+".GameReview "
                 + "SET  reviewText = \""+reviewText+"\" "
                 + "WHERE fk_gameId = "+game.getGameId()+" "
-                + "AND fk_userId = "+user.getUserId()+";";
+                + "AND fk_reviewerId = "+user.getUserId()+";";
         PreparedStatement pstmt = null;
         boolean successful = true;
         try {
