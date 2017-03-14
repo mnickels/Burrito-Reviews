@@ -487,7 +487,7 @@ public class Query {
                      + "FROM "+db+".Game, "+db+".UserRating "
                      + "WHERE gameID = fk_gameId "
                      + "GROUP BY gameId "
-                     + "ORDER BY SUM(rating) ASC;";
+                     + "ORDER BY AVG(rating) ASC;";
         List<Game> games = new ArrayList<Game>();
         try {
             stmt = conn.createStatement();
