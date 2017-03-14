@@ -53,6 +53,8 @@ public class GUI extends JFrame {
     /** This is the generated Serialization number. */
     private static final long serialVersionUID = -2055958502864278259L;
 
+    // yo yo mama
+    
     //Constants
     /** This is the default starting size. */
     private static final Dimension DRAWING_PANEL_PREFERRED_SIZE = new Dimension(600, 500);
@@ -292,8 +294,6 @@ public class GUI extends JFrame {
      */
     private void adminScreen() {
     	
-		final gameInfoPanel gameInfo;
-		
     	//Card creation 
     	JPanel northCard = new JPanel();
     	JPanel southCard = new JPanel();
@@ -314,8 +314,6 @@ public class GUI extends JFrame {
         JComboBox<String> cb = new JComboBox<String>(comboBoxItems);
         cb.setEditable(false);
         comboBoxPane.add(cb);
-		
-		gameInfo = new gameInfoPanel(Query.getGameByName((String) cb.getSelectedItem()));
     	
         // constructing the button and text fields
         final JButton close = new JButton("Logout");
@@ -326,8 +324,6 @@ public class GUI extends JFrame {
         // burrito rating
         BurritoScore bs = new BurritoScore((int) Math.round(Query.getGameAvgRating(Query.getGameByName((String) cb.getSelectedItem()))), false);
         
-		northCard.add(gameInfo);
-		
         final JLabel review = new JLabel("Reviews:");
         
         // padding
@@ -363,7 +359,6 @@ public class GUI extends JFrame {
         		String gameTitle = (String) cb.getSelectedItem();
 				final int burritos = (int) Math.round(Query.getGameAvgRating(Query.getGameByName(gameTitle)));
 		        bs.setScore(burritos);
-				gameInfo.setInfo(Query.getGameByName(gameTitle));
 		        revalidate();
 		        repaint();
         	}
@@ -488,8 +483,6 @@ public class GUI extends JFrame {
      */
     private void reviewerScreen() {
     	
-		final gameInfoPanel gameInfo;
-		
     	//Card creation 
     	JPanel northCard = new JPanel();
     	JPanel southCard = new JPanel();
@@ -510,8 +503,6 @@ public class GUI extends JFrame {
         
         cb.setEditable(false);
         comboBoxPane.add(cb);
-		
-		gameInfo = new gameInfoPanel(Query.getGameByName((String) cb.getSelectedItem()));
     	
         // constructing the button and text fields
         final JButton close = new JButton("Logout");
@@ -522,8 +513,6 @@ public class GUI extends JFrame {
         // burrito rating
         BurritoScore bs = new BurritoScore((int) Math.round(Query.getGameAvgRating(Query.getGameByName((String) cb.getSelectedItem()))), false);
         
-		northCard.add(gameInfo);
-		
         final JLabel review = new JLabel("New Review:");
         
         // padding
@@ -584,31 +573,32 @@ public class GUI extends JFrame {
         close.addActionListener(new CloseButtonActionListener());
         
         class NewReviewButtonActionListener implements ActionListener {
-            
+
             /**
              * This method logs the user out.
              * @param theButtonClick when the button action event takes place
              */
             public void actionPerformed(final ActionEvent theButtonClick) {
-            	System.out.println("NewGame!");
-            	NewGamePromptPanel p = new NewGamePromptPanel();
-            	
-            	int button = JOptionPane.showConfirmDialog(null, p, "Add New Game", JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
-            	switch (button) {
-            	case JOptionPane.OK_OPTION:
-                	boolean success = Query.addGame(p.getGame());
-                	if (!success) {
-                		JOptionPane.showMessageDialog(null, "Failed to add Game due to improper inputs.");
-                	}
-            		break;
-            	case JOptionPane.CANCEL_OPTION:
-            		break;
-            	default:
-            		break;
-            	}
-            	pageManagement(ADMINPANEL);
+                System.out.println("NewReview!");
+                NewReviewPromptPanel p = new NewReviewPromptPanel();
+                String gameTitle = (String) cb.getSelectedItem();
+                int button = JOptionPane.showConfirmDialog(null, p, "Add New Review", JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
+                switch (button) {
+                case JOptionPane.OK_OPTION:
+                    boolean success = Query.addGameReview(Query.getGameByTitle(gameTitle), currentUser, p.getContent());
+                    if (!success) {
+                        JOptionPane.showMessageDialog(null, "Failed to add Review due to improper inputs.");
+                    }
+                    break;
+                case JOptionPane.CANCEL_OPTION:
+                    break;
+                default:
+                    break;
+                }
+                pageManagement(REVIEWERPANEL);
             }
         }
+        newReview.addActionListener(new NewReviewButtonActionListener());
         //addGame.addActionListener(new NewReviewButtonActionListener());
 		
 		class EditReviewButtonActionListener implements ActionListener {
@@ -648,8 +638,6 @@ public class GUI extends JFrame {
      */
     private void UserScreen() {
     	
-		final gameInfoPanel gameInfo;
-		
     	//Card creation 
     	JPanel northCard = new JPanel();
     	JPanel southCard = new JPanel();
@@ -674,8 +662,6 @@ public class GUI extends JFrame {
         
         cb.setEditable(false);
         comboBoxPane.add(cb);
-		
-		gameInfo = new gameInfoPanel(Query.getGameByName((String) cb.getSelectedItem()));
     	
         // setting up the scroll pane
         JPanel jpAcc = new JPanel();
@@ -698,8 +684,6 @@ public class GUI extends JFrame {
         // burrito rating
         BurritoScore bs = new BurritoScore((int) Math.round(Query.getGameAvgRating(Query.getGameByName((String) cb.getSelectedItem()))), false);
         
-		northCard.add(gameInfo);
-		
         final JLabel review = new JLabel("Reviews:");
         
         // padding
