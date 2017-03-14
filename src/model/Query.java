@@ -425,11 +425,11 @@ public class Query {
      */
     public static List<Game> getGamesByAvgRating() {
         Statement stmt = null;
-        String query = "SELECT gameId, title, developer, genre, `year`, esrb, SUM(rating) AS \"sum\" "
+        String query = "SELECT gameId, title, developer, genre, `year`, esrb "
                      + "FROM "+db+".Game, "+db+".UserRating "
                      + "WHERE gameID = fk_gameId "
                      + "GROUP BY gameId "
-                     + "ORDER BY \"sum\" ASC;";
+                     + "ORDER BY SUM(rating) ASC;";
         List<Game> games = new ArrayList<Game>();
         try {
             stmt = conn.createStatement();
