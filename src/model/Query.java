@@ -718,22 +718,35 @@ public class Query {
         return successful;
     }
     
+    /**
+     * Gets the review for the game by user.
+     * 
+     * @param game the game
+     * @param user the user
+     * @return the review of the game by the user
+     */
     public static String getReview(Game game, User user) {
-    	if (conn == null) {
+        if (conn == null) {
             createConnection();
         }
-        String sql = "SELECT reviwText FROM "+db+".GameReview "
-                + "WHERE fk_gameId = "+game.getGameId()+" "
-                + "AND fk_reviewerId = "+user.getUserId()+";";
-        PreparedStatement pstmt = null;
+        Statement stmt = null;
+        String query = "SELECT reviewText "
+                     + "FROM "+db+".GameReview  "
+                     + "WHERE fk_reviewerId = " + user.getUserId() + " "
+                     + "AND fk_gameId = "+game.getGameId()+";";
+        String review = "";
         try {
-            pstmt = conn.prepareStatement(sql);
-            pstmt.executeUpdate();
+            stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            rs.next();
+            review = rs.getString("reviewText");
+            if (stmt != null) {
+                stmt.close();
+            }
         } catch (SQLException e) {
-            System.out.println(e);
             e.printStackTrace();
         }
-        return pstmt.toString();
+        return review;
     }
     
     /**
