@@ -666,7 +666,8 @@ public class Query {
         Statement stmt = null;
         String query = "SELECT reviewText "
                      + "FROM "+db+".GameReview , "+db+".Game "
-                     + "WHERE title = \"" + title + "\"";
+                     + "WHERE title = \"" + title + "\" "
+                     + "AND fk_gameId = gameId;";
         List<String> reviews = new ArrayList<String>();
         try {
             stmt = conn.createStatement();
