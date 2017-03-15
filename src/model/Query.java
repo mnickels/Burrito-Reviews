@@ -14,7 +14,7 @@ import java.util.Scanner;
 
 /**
  * Queries to the database.
- * This should really have been split into seperate classes.
+ * This should really have been split into separate classes.
  * But it's too late for that.
  * 
  * @author Brian Jorgenson
@@ -823,6 +823,12 @@ public class Query {
         return successful;
     }
     
+    /**
+     * Removes a game from the database
+     * 
+     * @param game the game to remove
+     * @return true if successful, otherwise false
+     */
     public static boolean removeGame(Game game) {
     	if (conn == null) {
             createConnection();
